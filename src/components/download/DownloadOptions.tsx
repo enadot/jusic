@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { CtaLink } from "@/components/ui/CtaLink";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
@@ -51,13 +51,20 @@ const RECOMMENDED: Record<Platform, OptionKey> = {
   desktop: "web",
 };
 
+/** The user agent never changes while the page is open, so there is nothing
+ *  to subscribe to. useSyncExternalStore (rather than an effect) is what keeps
+ *  the server snapshot neutral without a cascading re-render on mount. */
+const neverChanges = () => () => {};
+const serverSnapshot = (): OptionKey | null => null;
+const clientSnapshot = (): OptionKey | null => RECOMMENDED[detectPlatform()];
+
 export function DownloadOptions() {
   // Render neutral on the server; highlight only once we know the device.
-  const [recommended, setRecommended] = useState<OptionKey | null>(null);
-
-  useEffect(() => {
-    setRecommended(RECOMMENDED[detectPlatform()]);
-  }, []);
+  const recommended = useSyncExternalStore(
+    neverChanges,
+    clientSnapshot,
+    serverSnapshot,
+  );
 
   return (
     <ul className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">

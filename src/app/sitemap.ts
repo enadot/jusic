@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: site.url, lastModified, priority: 1 },
     { url: `${site.url}/download`, lastModified, priority: 0.9 },
+    { url: `${site.url}/artists`, lastModified, priority: 0.8 },
     { url: `${site.url}/legal/accessibility`, lastModified, priority: 0.3 },
   ];
 }

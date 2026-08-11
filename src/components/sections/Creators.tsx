@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
 import { Reveal } from "@/components/ui/Reveal";
-import { creators, mailto } from "@/content/site";
+import { creators } from "@/content/site";
 
 /** The one element on the page allowed to carry the brand gradient. */
 export function Creators() {
@@ -29,7 +29,7 @@ export function Creators() {
           </p>
           <div className="mt-8">
             <CtaLink
-              href={mailto(creators.cta)}
+              href="/artists"
               event="artist_contact_click"
               placement="cta"
               variant="secondary"

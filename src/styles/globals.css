@@ -282,6 +282,81 @@ a:hover {
     width: 1.3em;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Dialog
+   A native <dialog> opened with showModal(): focus trap, Esc, inert background
+   and the top layer all come for free, so there is no z-index race with the
+   header (z-20) or the sticky bar (z-30).
+   Bottom sheet on phones, centred card from 640px up.
+   --dur-sheet was declared in the design system for exactly this and had no
+   user until now.
+   -------------------------------------------------------------------------- */
+.dlg {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  max-width: 100%;
+  max-height: 100%;
+  /* Pin to the bottom of the viewport: the sheet rises from the edge. */
+  margin-inline: auto;
+  margin-block: auto 0;
+  width: 100%;
+}
+
+.dlg::backdrop {
+  background: rgb(8 11 13 / 0.72);
+  backdrop-filter: blur(var(--blur-glass));
+  animation: dlg-fade var(--dur-base) var(--ease-standard);
+}
+
+.dlg[open] {
+  animation: dlg-rise var(--dur-sheet) var(--ease-out);
+}
+
+@media (min-width: 640px) {
+  .dlg {
+    margin-block: auto;
+    width: auto;
+  }
+  .dlg[open] {
+    animation: dlg-card var(--dur-base) var(--ease-out);
+  }
+}
+
+@keyframes dlg-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dlg-rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes dlg-card {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+/* The global kill switch below covers elements but not ::backdrop. */
+@media (prefers-reduced-motion: reduce) {
+  .dlg[open],
+  .dlg::backdrop {
+    animation: none;
+  }
+}
+
+/* While a modal is open the page behind it must not scroll. */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
 }
 
 /* Token override, kept unlayered alongside the :root block it overrides. */

@@ -38,16 +38,32 @@ Stack, תוכן, נגישות ומדידה. שתי סתירות שהתגלו ב�
 
 ## 3. Stack ומבנה
 
-Next.js 15 App Router · TypeScript strict · Tailwind CSS v4 (CSS‑first) ·
+Next.js 16 App Router · TypeScript strict · Tailwind CSS v4 (CSS‑first) ·
 `lucide-react` · npm · Vercel.
+נתונים: **Neon Postgres + Drizzle**. אימות דשבורד: **Neon Auth**. ולידציה: `zod`.
 
 **אין**: Sanity (בשלב זה), shadcn/ui, Magic UI, ספריות אנימציה, CSS‑in‑JS.
+
+`drizzle-orm`, `@neondatabase/serverless`, `zod` ו‑`@neondatabase/auth` הם
+**server‑only** — הם לא מגיעים ל‑bundle של אף עמוד שיווקי, וזה נבדק בכל build.
+ערכת ה‑UI של Neon Auth (`@neondatabase/auth-ui`) נבחנה ונדחתה: היא גוררת
+next‑themes ו‑shadcn ומתנגשת עם מערכת עיצוב שהיא dark‑only ו‑RTL. מסך ההתחברות
+בנוי מ‑`Button`/`Field` הקיימים מול `auth.signIn.email`.
+
+**למה Next 16:** כל גרסאות `@neondatabase/auth` דורשות `next >= 16`. השדרוג
+מ‑15.5 נעשה בשביל זה. שתי השלכות מעשיות: `middleware.ts` נקרא עכשיו `proxy.ts`,
+ו‑`agentRules: false` ב‑`next.config.ts` מונע מ‑Next להוסיף בלוק הנחיות משלו
+ל‑`CLAUDE.md` בכל `next dev`.
 
 ```
 src/
 ├── app/                    routes בלבד — כל route רזה ומרכיב סקשנים
 │   ├── page.tsx            עמוד הבית
 │   ├── download/           עמוד ההורדה
+│   ├── artists/            עמוד ההצטרפות לאמנים + טופס מלא
+│   ├── admin/              לוח הבקרה — layout נפרד, noindex, force-dynamic
+│   ├── api/auth/[...path]/ proxy ל‑Neon Auth
+│   ├── api/form-token/     מנפיק את חותמת הזמן החתומה של הטפסים
 │   ├── legal/{4}/          עמודים משפטיים
 │   ├── layout.tsx          html/dir/lang, פונט, skip link, metadata גלובלי
 │   ├── opengraph-image.tsx OG דינמי (next/og, Node runtime)
@@ -56,10 +72,23 @@ src/
 │   ├── ui/                 Button, CtaLink, Icon, Reveal
 │   ├── sections/           סקשן אחד לכל חלק בעמוד הבית
 │   ├── download/           DownloadOptions
+│   ├── forms/              ContactModalTrigger, ContactForm
+│   ├── artists/            סקשנים + ArtistForm
+│   ├── admin/              Shell, Pieces, Filters, SignInForm, DbError
 │   └── shared/             Container, StickyCta, JsonLd, LegalLayout, UtmCapture
 ├── content/site.ts         כל הטקסטים
-├── lib/                    analytics, platform, schema, cn
-└── styles/globals.css      טוקנים + base
+├── lib/                    analytics, platform, schema, cn, formState, formToken
+├── server/                 הכול server-only
+│   ├── db/                 schema + client (drizzle/neon-http)
+│   ├── queries/            קריאות לדשבורד + פענוח searchParams
+│   ├── actions/            server actions (טפסים ציבוריים + פעולות דשבורד)
+│   ├── auth.ts             Neon Auth + requireAdmin() + allowlist
+│   ├── validation.ts       סכמות zod
+│   ├── spam.ts             honeypot, חותמת חתומה, מכסה לפי IP
+│   └── webhook.ts          שליחה ל‑Make
+├── styles/globals.css      טוקנים + base
+proxy.ts                    שומר על /admin (middleware של Next 16)
+drizzle/                    מיגרציות שנוצרו, נכנסות ל‑git
 ```
 
 **עיקרון מנחה:** כל סקשן בעמוד הבית הוא רכיב עצמאי שאינו יודע דבר על שכניו.
@@ -210,7 +239,7 @@ track(event, { placement, ...params })
 
 | יעד | מצב |
 | --- | --- |
-| Initial JS | **119 kB** (תקציב 150 kB) |
+| Initial JS | **~152 kB** (תקציב 150 kB — ראו הערה) |
 | RSC by default | `"use client"` רק ב‑5 עלים: `SiteHeader`, `Faq`, `Reveal`, `CtaLink`, `StickyCta`, `DownloadOptions`, `UtmCapture` |
 | תמונות | `next/image` בכל מקום, AVIF/WebP, `priority` ל‑Hero בלבד |
 | אנימציה | CSS + `IntersectionObserver`. **אין ספריית אנימציה** — `Reveal` רק מוסיף class |
@@ -219,6 +248,22 @@ track(event, { placement, ...params })
 `Reveal` משמש גם כטריגר ל‑`section_view`, כדי לא להריץ observer שני על אותם
 אלמנטים.
 
+### על חריגת התקציב
+
+התקציב נקבע מול Next 15. מדידה של אותו עמוד לפני ואחרי, באותה שיטה:
+
+| | `/` | route בלי רכיבים (`_not-found`) |
+| --- | --- | --- |
+| Next 15 (לפני) | 155.3 KB gz | 139.7 KB gz |
+| Next 16 + טפסים | 188.8 KB gz | 169.9 KB gz |
+
+הדלתא ב‑route שאין בו שום רכיב היא **30.2KB** — כלומר כמעט כל הגידול הוא
+runtime של Next 16 ו‑React 19.2, לא הקוד שנוסף. תרומת הטפסים לעמוד הבית היא
+**כ‑3KB**, כי המודל עצמו נטען ב‑`next/dynamic` רק בלחיצה הראשונה.
+
+זו ההשלכה של שדרוג שנעשה כדי לאפשר את Neon Auth. אם התקציב חייב לחזור
+ל‑150KB, ההחלטה לבחון היא Next 16 — לא הטפסים.
+
 ---
 
 ## 10. עמודים
@@ -226,7 +271,9 @@ track(event, { placement, ...params })
 | נתיב | מה יש בו | הערות |
 | --- | --- | --- |
 | `/` | Header · Hero · Ticker · Why · Features · Screens · Creators · FAQ · FinalCta · Footer | JSON‑LD: Organization, WebSite, SoftwareApplication ×2, FAQPage |
-| `/download` | 4 אפשרויות התקנה + הוראות APK + עזרה | ראו §11 |
+| `/download` | 4 אפשרויות התקנה + הוראות APK + עזרה | ראו §11. ״דיווח על באג״ פותח מודל |
+| `/artists` | Hero · למה להצטרף · איך זה עובד · טופס · FAQ | הקופי בנוי על `creators` המאושר. **לא** ב‑`nav` — ראו OPEN_ITEMS #16 |
+| `/admin/*` | סקירה · כל הפניות · הצטרפות אמנים · פנייה בודדת · ייצוא CSV | `noindex`, `force-dynamic`, מוגן ב‑`proxy.ts` **וגם** ב‑`requireAdmin()` |
 | `/legal/accessibility` | הצהרת נגישות מלאה | מאונדקס |
 | `/legal/{terms,privacy,copyright}` | route אמיתי + הודעת ״טרם נמסר״ | `noindex` עד לנוסח מחייב |
 | `/opengraph-image` | OG דינמי בעברית עם Ploni | Node runtime (קורא woff מ‑`public/`) |
@@ -254,6 +301,89 @@ track(event, { placement, ...params })
   עוקף.
 - `StickyCta` מופיע במובייל אחרי גלילת ה‑Hero, מכבד `env(safe-area-inset-bottom)`,
   ו‑`main` שומר `padding-bottom` תואם כדי שלא יכסה את הפוטר לעולם.
+
+---
+
+## 11א. טפסים, נתונים ולוח הבקרה
+
+### מה קורה כשמישהו שולח טופס
+
+```
+כפתור  →  Modal (native <dialog>)  →  ContactForm  →  submitContact()
+                                                          ├── zod
+                                                          ├── spam.checkSubmission()
+                                                          ├── insert ל‑Neon
+                                                          └── after() → webhook ל‑Make
+```
+
+`/artists` זהה, רק בלי המודל ועם `submitArtist()`.
+
+### למה `<dialog>` נייטיבי
+
+הפלטפורמה נותנת בחינם את החלקים הקשים: מלכודת פוקוס, סגירה ב‑Esc, `inert` על
+הרקע, ו‑**top layer** — כלומר אין מלחמת z‑index מול ה‑header (`z-20`) או
+ה‑StickyCta (`z-30`). התצוגה היא bottom sheet מתחת ל‑640px וכרטיס ממורכז מעליו,
+והאנימציה משתמשת ב‑`--dur-sheet` שהוגדר במערכת העיצוב ולא היה לו צרכן עד עכשיו.
+
+### שתי מלכודות שנתגלו בבנייה
+
+1. **מודול `"use server"` יכול לייצא רק פונקציות async.** `IDLE_STATE` ישב שם
+   בהתחלה והפיל את כל הטפסים ב‑runtime. הוא הועבר ל‑`src/lib/formState.ts`.
+2. **React 19 מאפס טופס לא‑מבוקר אחרי שה‑action מסתיים.** בלי טיפול, כל שגיאת
+   ולידציה הייתה מוחקת את מה שהמבקר הקליד. לכן `FormState.values` מחזיר את
+   הערכים והשדות מקבלים אותם כ‑`defaultValue` — האיפוס נוחת על מה שנשלח.
+
+### חותמת הזמן והסטטיות
+
+`createStamp()` **לא** נקרא בזמן רינדור: עמוד הבית ו‑`/artists` מרונדרים
+סטטית, ולכן חותמת מזמן ה‑build הייתה בת שעות אצל כל מבקר. במקום זה
+`/api/form-token` מנפיק אותה, והטופס מושך אותה כשהוא נטען — כלומר בפתיחת המודל.
+כך העמודים נשארים סטטיים והבקשה קורית רק למי שבאמת פתח טופס.
+
+### הגנת ספאם — שלוש שכבות, אפס חיכוך למשתמש
+
+| שכבה | מה היא תופסת | התנהגות |
+| --- | --- | --- |
+| honeypot (`website`) | בוט שממלא כל שדה | דחייה שקטה, הודעה גנרית |
+| חותמת חתומה HMAC | טופס שנקצר או שנשלח מחוץ לחלון של שעתיים | דחייה |
+| מכסה לפי `ipHash` | 5 פניות לשעה מאותו מכשיר | הודעה ידידותית |
+
+חתימה פגומה או טופס ישן = דחייה. שליחה **מהירה מדי** (< 1.2 שנייה) היא סיגנל
+חלש בלבד ולכן מקבלת מסלול נפרד וניתן לניסיון חוזר — הודעה קצרה, והניסיון הבא
+עובר, כי החותמת נוצרת פעם אחת לכל טופס. אין captcha.
+
+ה‑IP הגולמי **לא נשמר לעולם** — רק `sha256(ip + IP_HASH_SALT)`.
+
+### Webhook ל‑Make
+
+רץ ב‑`after()`, כלומר אחרי שהתשובה כבר בדרך למשתמש, וכל כישלון נבלע ונרשם ללוג.
+פנייה שנשמרה בהצלחה ב‑DB לא תוצג כשגיאה רק בגלל ש‑Make לא זמין. אם
+`MAKE_WEBHOOK_SECRET` מוגדר, ה‑body נחתם ב‑`x-jusic-signature` (HMAC‑SHA256).
+
+### מודל הנתונים
+
+טבלה אחת, `submissions`. ארבעת נושאי הפוטר וטופס האמנים נבדלים רק ב‑`type`
+ובמה שיושב ב‑`payload` (jsonb), כדי שהדשבורד יהיה רשימה אחת שאפשר לסנן.
+`type` ו‑`status` הם `text` ולא enum בכוונה: הוספת נושא היא שינוי תוכן, לא מיגרציה.
+
+### הרשאות הדשבורד — שני שערים
+
+`proxy.ts` בולם בקשות אנונימיות לפני הרינדור, אבל הוא **לא** השער היחיד:
+`requireAdmin()` רץ בכל עמוד ובכל פעולה ובודק גם את ה‑allowlist, שה‑middleware
+לא רואה. Neon Auth מאפשר לכל אחד להירשם, ולכן בלי `ADMIN_EMAILS` תיבת הפניות
+הייתה פתוחה. רשימה ריקה נועלת את כולם.
+
+מסלול הייצוא (`/admin/submissions/export`) הוא route handler ולכן לא נהנה
+מחוזה ההפניה של `requireAdmin()` — הוא בודק את שני החלקים בעצמו ומחזיר 401.
+
+### הסינון בדשבורד
+
+הפילטרים הם טופס GET והמצב חי ב‑`searchParams`, לא ב‑state. שלוש תוצאות:
+כל תצוגה ניתנת לשיתוף בקישור, הרשימות נשארות RSC בלי JS, וייצוא ה‑CSV משתמש
+באותה מחרוזת שאילתה בדיוק. `parseFilters()` מסנן ברשימת היתר, כך ש‑URL ערוך
+ביד יכול רק לצמצם תוצאות.
+
+ה‑CSV נכתב עם BOM של UTF‑8 — בלעדיו Excel פותח את העברית כג׳יבריש.
 
 ---
 

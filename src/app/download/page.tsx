@@ -4,10 +4,10 @@ import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
 import { DownloadOptions } from "@/components/download/DownloadOptions";
-import { CtaLink } from "@/components/ui/CtaLink";
+import { ContactModalTrigger } from "@/components/forms/ContactModalTrigger";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { softwareAppSchemas } from "@/lib/schema";
-import { contact, download, mailto } from "@/content/site";
+import { contact, download } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "הורדת האפליקציה",
@@ -100,16 +100,14 @@ export default function DownloadPage() {
             {download.help.body}
           </p>
           <div className="mt-6 flex justify-center">
-            <CtaLink
-              href={mailto(contact.topics[0].label)}
+            <ContactModalTrigger
+              topic={contact.topics[0].id}
+              label={download.help.cta}
               event="bug_report_click"
               placement="download"
               variant="outline"
               icon="bug_report"
-              external={false}
-            >
-              {download.help.cta}
-            </CtaLink>
+            />
           </div>
         </Container>
       </main>
