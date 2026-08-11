@@ -187,14 +187,183 @@ export const finalCta = {
   },
 } as const;
 
+/**
+ * `id` is the submissions.type column; `event` is the existing analytics event
+ * kept so the funnel does not break. Adding a topic here adds it everywhere.
+ */
 export const contact = {
   heading: "יש לכם רעיונות, בקשות או שאלות? דברו איתנו!",
   topics: [
-    { icon: "bug_report", label: "דיווח על באג", event: "bug_report_click" },
-    { icon: "lightbulb", label: "הצעת ייעול או רעיון", event: "idea_contact_click" },
-    { icon: "mic", label: "הצטרפות אמנים", event: "artist_contact_click" },
-    { icon: "balance", label: "פנייה בנושא זכויות יוצרים", event: "copyright_contact_click" },
+    { id: "bug", icon: "bug_report", label: "דיווח על באג", event: "bug_report_click" },
+    { id: "idea", icon: "lightbulb", label: "הצעת ייעול או רעיון", event: "idea_contact_click" },
+    { id: "artist", icon: "mic", label: "הצטרפות אמנים", event: "artist_contact_click" },
+    { id: "copyright", icon: "balance", label: "פנייה בנושא זכויות יוצרים", event: "copyright_contact_click" },
   ],
+} as const;
+
+/**
+ * Form chrome. Newly written for the contact forms — not from the approved
+ * design. Open to client edits, see docs/COPY_SUGGESTIONS.md.
+ */
+export const forms = {
+  contact: {
+    /** Modal intro per topic, keyed by contact.topics[].id. */
+    intro: {
+      bug: "ספרו לנו מה קרה ואיפה. ככל שנדע יותר, נתקן מהר יותר.",
+      idea: "יש לכם רעיון שישפר את ג׳וזיק? נשמח לשמוע.",
+      artist: "השאירו פרטים ונחזור אליכם בהקדם.",
+      copyright: "פנייה בנושא זכויות יוצרים — נטפל בה בהקדם.",
+    },
+    fields: {
+      name: "שם מלא",
+      email: "אימייל",
+      phone: "טלפון",
+      phoneHint: "לא חובה. רק אם נוח לכם שנחזור אליכם טלפונית.",
+      message: "ההודעה שלכם",
+      topic: "נושא הפנייה",
+    },
+    consent: "קראתי ואני מאשר/ת את",
+    consentLink: "מדיניות הפרטיות",
+    submit: "שליחה",
+    submitting: "שולח…",
+    success: {
+      title: "קיבלנו, תודה!",
+      body: "הפנייה שלכם נשמרה ואנחנו נחזור אליכם למייל שהשארתם.",
+      close: "סגירה",
+    },
+  },
+} as const;
+
+/**
+ * /artists — the artist landing page.
+ * Newly written copy built on the approved `creators` wording. No claim here
+ * goes beyond what `creators.body` already says. See docs/COPY_SUGGESTIONS.md.
+ */
+export const artists = {
+  meta: {
+    title: "הצטרפות אמנים ויוצרים | Jusic",
+    description:
+      "אמנים, יוצרים ובעלי זכויות — השאירו פרטים והצוות של ג׳וזיק יחזור אליכם להקמת פרופיל אמן והעלאת תוכן.",
+  },
+  hero: {
+    eyebrow: "לאמנים וליוצרים",
+    headingA: "היצירה שלכם ראויה לבמה.",
+    headingB: "ולכבוד.",
+    body: "ב־Jusic אנחנו מאמינים בשקיפות מלאה ובשותפות אמיתית עם אמנים, יוצרים ובעלי זכויות. מודל התגמול שלנו דואג ליוצרים מהשקל הראשון, וכל יצירה מקבלת במה מכבדת בתוך סביבת תוכן יהודית איכותית.",
+    cta: "למילוי הטופס",
+  },
+  why: {
+    headingA: "למה להעלות",
+    headingB: "את המוזיקה שלכם לג׳וזיק",
+    items: [
+      {
+        icon: "balance",
+        title: "תגמול מהשקל הראשון",
+        body: "מודל התגמול שלנו דואג ליוצרים מהשקל הראשון, בשקיפות מלאה.",
+      },
+      {
+        icon: "mic",
+        title: "במה מכבדת",
+        body: "כל יצירה מקבלת במה מכבדת בתוך סביבת תוכן יהודית איכותית.",
+      },
+      {
+        icon: "lightbulb",
+        title: "שותפות אמיתית",
+        body: "רוצים לפתוח פרופיל אמן או לשמוע על אפשרויות שיתוף פעולה? נשמח להכיר אתכם.",
+      },
+    ],
+  },
+  how: {
+    headingA: "איך זה",
+    headingB: "עובד",
+    steps: [
+      {
+        title: "משאירים פרטים",
+        body: "ממלאים את הטופס בעמוד הזה עם קישור לחומרים שלכם.",
+      },
+      {
+        title: "חוזרים אליכם",
+        body: "הצוות שלנו עובר על הפנייה ויוצר איתכם קשר.",
+      },
+      {
+        title: "מקימים פרופיל",
+        body: "אנחנו מסייעים בהקמת פרופיל האמן ובהעלאת התוכן.",
+      },
+    ],
+  },
+  form: {
+    headingA: "טופס",
+    headingB: "הצטרפות",
+    body: "השדות המסומנים בכוכבית הם חובה. שאר הפרטים עוזרים לנו להגיע מוכנים לשיחה.",
+    sections: {
+      contact: "פרטי קשר",
+      artist: "פרטי האמן",
+      catalog: "על הקטלוג",
+    },
+    fields: {
+      stageName: "שם במה",
+      genre: "סגנון",
+      genrePlaceholder: "בחרו סגנון",
+      primaryLink: "קישור לחומרים",
+      primaryLinkHint: "יוטיוב, ספוטיפיי, דרייב או כל מקום שאפשר לשמוע בו את המוזיקה.",
+      secondaryLink: "קישור נוסף",
+      catalogSize: "כמה שירים יש בקטלוג?",
+      catalogSizePlaceholder: "בחרו טווח",
+      isDistributed: "האם המוזיקה שלכם מופצת היום בפלטפורמות דיגיטליות?",
+      message: "משהו נוסף שנשמח לדעת",
+    },
+    genres: [
+      { value: "chasidic", label: "חסידי" },
+      { value: "mizrahi", label: "מזרחי" },
+      { value: "pop", label: "פופ" },
+      { value: "rock", label: "רוק" },
+      { value: "cantorial", label: "חזנות" },
+      { value: "instrumental", label: "אינסטרומנטלי" },
+      { value: "kids", label: "ילדים" },
+      { value: "lessons", label: "שיעורים ופודקאסטים" },
+      { value: "other", label: "אחר" },
+    ],
+    catalogSizes: [
+      { value: "1-5", label: "עד 5 שירים" },
+      { value: "6-20", label: "6 עד 20" },
+      { value: "21-50", label: "21 עד 50" },
+      { value: "50+", label: "יותר מ־50" },
+    ],
+    distribution: [
+      { value: "yes", label: "כן" },
+      { value: "no", label: "לא" },
+    ],
+    submit: "שליחת הטופס",
+    success: {
+      title: "הטופס נשלח, תודה!",
+      body: "הפנייה שלכם נשמרה. הצוות שלנו יעבור עליה ויחזור אליכם למייל שהשארתם.",
+      back: "חזרה לדף הבית",
+    },
+  },
+  faq: {
+    headingA: "שאלות",
+    headingB: "של אמנים",
+    items: [
+      {
+        id: "artists-cost",
+        question: "יש עלות להעלאת מוזיקה לג׳וזיק?",
+        answer:
+          "אין עלות להעלאת מוזיקה. מודל התגמול שלנו דואג ליוצרים מהשקל הראשון.",
+      },
+      {
+        id: "artists-rights",
+        question: "אני בעל זכויות ולא האמן עצמו. אפשר לפנות?",
+        answer:
+          "בהחלט. הטופס מיועד לאמנים, ליוצרים ולבעלי זכויות כאחד. ציינו בשדה ההערות מה הקשר שלכם לחומרים.",
+      },
+      {
+        id: "artists-when",
+        question: "תוך כמה זמן תחזרו אליי?",
+        answer:
+          "הצוות שלנו עובר על כל פנייה ויוצר קשר במייל שהשארתם בטופס.",
+      },
+    ],
+  },
 } as const;
 
 export const legalLinks = [

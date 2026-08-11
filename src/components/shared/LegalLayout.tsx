@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
+import { site } from "@/content/site";
 
 export function LegalLayout({
   title,
@@ -40,8 +41,8 @@ export function PendingCopy({ what }: { what: string }) {
       <p className="m-0 text-[15px] text-text-secondary">
         טקסט {what} טרם נמסר לפרסום. עד לקבלת הנוסח המחייב, ניתן לפנות אלינו בכל
         שאלה בכתובת{" "}
-        <a href="mailto:editor@jusic.co" dir="ltr">
-          editor@jusic.co
+        <a href={`mailto:${site.contactEmail}`} dir="ltr">
+          {site.contactEmail}
         </a>
         .
       </p>

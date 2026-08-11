@@ -18,7 +18,13 @@ export type AnalyticsEvent =
   | "idea_contact_click"
   | "faq_open"
   | "section_view"
-  | "sticky_cta_click";
+  | "sticky_cta_click"
+  // Contact and artist forms. form_open fires on the trigger, the rest on the
+  // submit round trip, so open→submit→success is a funnel.
+  | "form_open"
+  | "form_submit"
+  | "form_success"
+  | "form_error";
 
 /** Where on the page the interaction happened. Required on every event. */
 export type Placement =
@@ -29,7 +35,8 @@ export type Placement =
   | "sticky"
   | "header"
   | "download"
-  | "faq";
+  | "faq"
+  | "artists";
 
 export type EventParams = {
   placement: Placement;
@@ -64,7 +71,11 @@ export function captureUtm(): void {
   }
 }
 
-function readUtm(): Record<string, string> {
+/**
+ * The attribution captured for this session. Also read by the contact forms,
+ * which post it along with the submission so a lead can be traced to a campaign.
+ */
+export function readUtm(): Record<string, string> {
   if (typeof window === "undefined") return {};
   try {
     const raw = window.sessionStorage.getItem(UTM_STORAGE_KEY);

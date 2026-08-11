@@ -1,14 +1,9 @@
 import Link from "next/link";
 import { Container } from "@/components/shared/Container";
-import { CtaLink } from "@/components/ui/CtaLink";
+import { ContactModalTrigger } from "@/components/forms/ContactModalTrigger";
 import { Reveal } from "@/components/ui/Reveal";
 import type { IconName } from "@/components/ui/Icon";
-import {
-  contact,
-  copyrightLine,
-  legalLinks,
-  mailto,
-} from "@/content/site";
+import { contact, copyrightLine, legalLinks } from "@/content/site";
 
 export function SiteFooter() {
   return (
@@ -20,17 +15,15 @@ export function SiteFooter() {
           </h2>
           <div className="mt-7 flex flex-wrap gap-3">
             {contact.topics.map((topic) => (
-              <CtaLink
-                key={topic.label}
-                href={mailto(topic.label)}
+              <ContactModalTrigger
+                key={topic.id}
+                topic={topic.id}
+                label={topic.label}
                 event={topic.event}
                 placement="footer"
                 variant="outline"
                 icon={topic.icon as IconName}
-                external={false}
-              >
-                {topic.label}
-              </CtaLink>
+              />
             ))}
           </div>
         </Reveal>

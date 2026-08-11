@@ -11,15 +11,23 @@ belong to the product?* If it belongs to the product, do not build it here.
 
 | Layer | Choice |
 | --- | --- |
-| Framework | Next.js 15 (App Router), TypeScript `strict`, RSC by default |
+| Framework | Next.js 16 (App Router), TypeScript `strict`, RSC by default |
 | Styling | Tailwind CSS v4, CSS-first `@theme` in `src/styles/globals.css` |
 | Icons | `lucide-react` |
 | Content | `src/content/site.ts` (typed module; Sanity is a later milestone) |
+| Data | Neon Postgres + Drizzle — contact form submissions only |
+| Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + `ADMIN_EMAILS` allowlist |
+| Validation | `zod`, server-side only |
 | Package manager | npm |
 | Deploy | Vercel |
 
 Not used: WordPress, jQuery, runtime CSS-in-JS, extra UI kits, extra animation
 libraries.
+
+**Everything under `src/server/` is server-only** and must never reach a client
+component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
+Import server actions by name; import types from `src/lib/`, not from a
+`"use server"` module (it may only export async functions).
 
 ## Structure
 
@@ -27,13 +35,19 @@ libraries.
 src/
 ├── app/                  routes, sitemap.ts, robots.ts, opengraph-image.tsx
 ├── components/
-│   ├── ui/               Button, CtaLink, Icon, Reveal
+│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field
 │   ├── sections/         one file per home-page section
 │   ├── download/         /download-only components
+│   ├── forms/            contact modal trigger + form
+│   ├── artists/          /artists sections + application form
+│   ├── admin/            dashboard chrome (never imported by the public site)
 │   └── shared/           Container, StickyCta, JsonLd, LegalLayout, UtmCapture
 ├── content/site.ts       every user-facing string
-├── lib/                  analytics.ts, platform.ts, schema.ts, cn.ts
+├── lib/                  analytics, platform, schema, cn, formState, formToken
+├── server/               server-only: db, queries, actions, auth, validation, spam, webhook
 └── styles/globals.css    design tokens + base
+proxy.ts                  guards /admin (Next 16's middleware)
+drizzle/                  generated migrations, committed
 ```
 
 Each home section is self-contained so it can move to its own route without a
@@ -95,8 +109,9 @@ never be presented as available. AI is not presented as a product feature.
 
 Everything goes through `track()` in `src/lib/analytics.ts` — no provider calls
 in components. Every event carries a `placement`
-(`hero | platforms | cta | footer | sticky | header | download | faq`). UTM
-params are captured once per session and attached automatically.
+(`hero | platforms | cta | footer | sticky | header | download | faq | artists`).
+UTM params are captured once per session, attached automatically, and posted
+along with every form submission so a lead can be traced to a campaign.
 
 No third-party script before LCP or before user interaction. No non-essential
 cookies without consent.
@@ -117,8 +132,32 @@ hero only.
 ## Commands
 
 ```bash
-npm run dev        # local
-npm run build      # production build
-npm run lint       # RTL check + eslint
-npm run typecheck  # tsc --noEmit
+npm run dev          # local
+npm run build        # production build
+npm run lint         # RTL check + eslint
+npm run typecheck    # tsc --noEmit
+npm run db:generate  # new migration from src/server/db/schema.ts
+npm run db:migrate   # apply migrations to DATABASE_URL
 ```
+
+Copy `.env.example` to `.env.local` before running the dashboard locally.
+
+## Forms
+
+Every contact CTA opens a form; nothing is a `mailto:` any more except the
+placeholder text on the unfinished legal pages. Two rules worth knowing before
+touching them:
+
+- A `"use server"` module may only export async functions. Shared constants and
+  types live in `src/lib/formState.ts`.
+- React 19 resets an uncontrolled form after its action resolves, so every form
+  echoes the submitted values back through `FormState.values` and feeds them to
+  `defaultValue`. Drop that and a validation error wipes the user's input.
+
+Spam is handled by a honeypot, an HMAC-signed render timestamp and a per-IP
+quota — no captcha, and the raw IP is never stored. The signed stamp comes from
+`/api/form-token` rather than from render, because the pages carrying the forms
+are statically prerendered.
+
+**Forms must not go live in production until `/legal/privacy` has real text** —
+see `docs/OPEN_ITEMS.md` #3א.
