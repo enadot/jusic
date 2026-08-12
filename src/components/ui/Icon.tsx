@@ -36,9 +36,16 @@ function BrandMark({
 /**
  * The stores have no lucide glyphs — brand marks were removed from the set.
  * These are the stores' own marks, single-colour so they inherit the button's
- * text colour. Used only on store buttons, never as decorative icons.
+ * text colour. Used only on store buttons and the Google sign-in button, never
+ * as decorative icons.
+ *
+ * Google's guidelines allow the monochrome G on a dark button, which is what
+ * the dashboard uses — the four-colour G would be a second brand palette on a
+ * surface that is meant to carry one accent.
  */
 const BRAND_MARKS = {
+  google:
+    "M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z",
   google_play:
     "M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1.001 1.001 0 010 1.73l-2.808 1.626L15.117 12l2.581-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z",
   app_store:

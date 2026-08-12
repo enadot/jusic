@@ -36,6 +36,9 @@ export function getAuth(): NeonAuth {
 
 export const SIGN_IN_PATH = "/admin/sign-in";
 export const NO_ACCESS_PATH = "/admin/no-access";
+export const FORGOT_PASSWORD_PATH = "/admin/forgot-password";
+/** Where Neon Auth sends the admin back once the emailed token is validated. */
+export const RESET_PASSWORD_PATH = "/admin/reset-password";
 
 /**
  * Neon Auth will happily let a stranger sign themselves up. Signing in is

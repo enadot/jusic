@@ -6,10 +6,16 @@ import { site } from "@/content/site";
 
 export const metadata = { title: "התחברות" };
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reset?: string }>;
+}) {
   // Already signed in and allowed? Skip the form.
   const user = await getAdminUser();
   if (user && isAllowedAdmin(user.email)) redirect("/admin");
+
+  const { reset } = await searchParams;
 
   return (
     <div className="flex min-h-dvh items-center justify-center px-5 py-16">
@@ -26,6 +32,14 @@ export default async function SignInPage() {
         <p className="mt-0 mb-7 text-[15px] text-text-secondary">
           האזור הזה מיועד לצוות בלבד.
         </p>
+        {reset ? (
+          <p
+            role="status"
+            className="mt-0 mb-6 rounded-[14px] border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-[14px] text-text-primary"
+          >
+            הסיסמה עודכנה. אפשר להתחבר.
+          </p>
+        ) : null}
         <SignInForm />
       </div>
     </div>
