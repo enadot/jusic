@@ -228,13 +228,13 @@ export const download = {
       cta: "פתחו את Jusic ב־Web",
     },
     googlePlay: {
-      icon: "android",
+      icon: "google_play",
       title: "Google Play",
       body: "ההתקנה הרגילה למכשירי Android עם חנות Google Play, כולל עדכונים אוטומטיים.",
       cta: "התקינו מ־Google Play",
     },
     appStore: {
-      icon: "phone_iphone",
+      icon: "app_store",
       title: "App Store",
       body: "לאייפון ולאייפד, ישירות מחנות האפליקציות של Apple.",
       cta: "התקינו מ־App Store",

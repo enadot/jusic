@@ -79,7 +79,7 @@ export function Hero() {
               placement="hero"
               size="lg"
               variant="outline"
-              icon="android"
+              icon="google_play"
             >
               {hero.ctas.googlePlay}
             </CtaLink>
@@ -89,7 +89,7 @@ export function Hero() {
               placement="hero"
               size="lg"
               variant="outline"
-              icon="phone_iphone"
+              icon="app_store"
             >
               {hero.ctas.appStore}
             </CtaLink>

@@ -40,7 +40,7 @@ export function FinalCta() {
               placement="cta"
               size="lg"
               variant="outline"
-              icon="android"
+              icon="google_play"
             >
               {finalCta.ctas.android}
             </CtaLink>
@@ -50,7 +50,7 @@ export function FinalCta() {
               placement="cta"
               size="lg"
               variant="outline"
-              icon="phone_iphone"
+              icon="app_store"
             >
               {finalCta.ctas.ios}
             </CtaLink>

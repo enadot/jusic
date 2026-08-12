@@ -1,5 +1,4 @@
 import {
-  Apple,
   Bug,
   Download,
   Globe,
@@ -10,11 +9,15 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-/**
- * Android has no lucide glyph — brand marks were removed from the set. This is
- * the platform's own mark, used only on store buttons, not a decorative icon.
- */
-function AndroidMark({ size, className }: { size: number; className?: string }) {
+function BrandMark({
+  size,
+  className,
+  path,
+}: {
+  size: number;
+  className?: string;
+  path: string;
+}) {
   return (
     <svg
       width={size}
@@ -25,10 +28,22 @@ function AndroidMark({ size, className }: { size: number; className?: string }) 
       aria-hidden="true"
       focusable="false"
     >
-      <path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.87 3.23A11.4 11.4 0 0012 8.06c-1.78 0-3.44.38-4.91 1.09L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48C3.3 11.16 1.18 14.3.75 18h22.5c-.43-3.7-2.55-6.84-5.65-8.52zM7 15.25a1.13 1.13 0 110-2.25 1.13 1.13 0 010 2.25zm10 0a1.13 1.13 0 110-2.25 1.13 1.13 0 010 2.25z" />
+      <path d={path} />
     </svg>
   );
 }
+
+/**
+ * The stores have no lucide glyphs — brand marks were removed from the set.
+ * These are the stores' own marks, single-colour so they inherit the button's
+ * text colour. Used only on store buttons, never as decorative icons.
+ */
+const BRAND_MARKS = {
+  google_play:
+    "M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1.001 1.001 0 010 1.73l-2.808 1.626L15.117 12l2.581-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z",
+  app_store:
+    "M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701",
+} as const;
 
 /**
  * The design system loads Material Symbols Rounded, but flags it as a
@@ -40,7 +55,6 @@ function AndroidMark({ size, className }: { size: number; className?: string }) 
  */
 const GLYPHS = {
   play_arrow: Play,
-  phone_iphone: Apple,
   download: Download,
   language: Globe,
   mic: Mic,
@@ -49,7 +63,7 @@ const GLYPHS = {
   balance: Scale,
 } satisfies Record<string, LucideIcon>;
 
-export type IconName = keyof typeof GLYPHS | "android";
+export type IconName = keyof typeof GLYPHS | keyof typeof BRAND_MARKS;
 
 export function Icon({
   name,
@@ -60,9 +74,17 @@ export function Icon({
   size?: number;
   className?: string;
 }) {
-  if (name === "android") return <AndroidMark size={size} className={className} />;
+  if (name in BRAND_MARKS) {
+    return (
+      <BrandMark
+        size={size}
+        className={className}
+        path={BRAND_MARKS[name as keyof typeof BRAND_MARKS]}
+      />
+    );
+  }
 
-  const Glyph = GLYPHS[name];
+  const Glyph = GLYPHS[name as keyof typeof GLYPHS];
   return (
     <Glyph
       size={size}
