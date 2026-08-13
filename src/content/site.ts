@@ -11,7 +11,13 @@
 export const site = {
   name: "Jusic",
   wordmark: "JUSIC",
-  legalCompanyName: "לומדעת טכנולוגיות מסחר ויזמות בע״מ",
+  /**
+   * As registered, ח״פ 514930460 — "יזמות ומסחר", not "מסחר ויזמות".
+   * The order was the other way round here until it was checked against the
+   * registry; it prints in the footer, the accessibility statement and the
+   * legal pages, so it is worth keeping exact.
+   */
+  legalCompanyName: "לומדעת טכנולוגיות יזמות ומסחר בע״מ",
   contactEmail: "editor@jusic.co",
   copyrightYear: 2026,
   url: "https://jusic.co",
@@ -53,8 +59,17 @@ export const apkRelease: {
  *
  * Same rule as apkRelease: anything null simply does not render, and nothing
  * here may be guessed. A privacy notice has to identify the entity holding the
- * data, so these should be filled before the policy is relied on — see
- * docs/OPEN_ITEMS.md #3.
+ * data, so these carry weight.
+ *
+ * Name, number and address are the registered particulars (private Israeli
+ * company, active, incorporated 5.6.2013). The address is the registered one —
+ * public directories list כנפי נשרים 60, which is not what the registry says,
+ * and a privacy notice should carry the registered address.
+ *
+ * `phone` stays null deliberately. The registry lists none, the number in the
+ * directories is unverified, and this field renders as a channel for privacy
+ * requests — which carry statutory response times. An email that works beats a
+ * phone number that might not. See docs/OPEN_ITEMS.md #3ב.
  *
  * `dataRetentionMonths` is how long a contact submission is kept. It is a
  * commitment made to the visitor, so changing it changes the policy text.
@@ -65,8 +80,8 @@ export const legalEntity: {
   phone: string | null;
   dataRetentionMonths: number;
 } = {
-  companyId: null,
-  address: null,
+  companyId: "514930460",
+  address: "הרואה 19, ירושלים",
   phone: null,
   dataRetentionMonths: 24,
 };

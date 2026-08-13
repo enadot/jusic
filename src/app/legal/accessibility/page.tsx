@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LegalLayout } from "@/components/shared/LegalLayout";
-import { site } from "@/content/site";
+import { legalEntity, site } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "הצהרת נגישות",
@@ -57,7 +57,20 @@ export default function AccessibilityPage() {
       </p>
 
       <h2>פרטי הארגון</h2>
-      <p>{site.legalCompanyName}</p>
+      <p>
+        {site.legalCompanyName}
+        {legalEntity.companyId ? (
+          <>
+            , ח&quot;פ <bdi>{legalEntity.companyId}</bdi>
+          </>
+        ) : null}
+        {legalEntity.address ? <>. {legalEntity.address}</> : null}
+        {legalEntity.phone ? (
+          <>
+            . טלפון: <bdi>{legalEntity.phone}</bdi>
+          </>
+        ) : null}
+      </p>
     </LegalLayout>
   );
 }
