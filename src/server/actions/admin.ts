@@ -8,7 +8,9 @@ import { MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { getDb } from "../db";
 import { submissions, SUBMISSION_STATUSES } from "../db/schema";
 import {
+  adminEmails,
   getAuth,
+  isAllowedAdmin,
   requireAdmin,
   RESET_PASSWORD_PATH,
   SIGN_IN_PATH,
@@ -83,6 +85,82 @@ export async function signIn(
     return { error: "ההתחברות נכשלה. נסו שוב." };
   }
 
+  redirect("/admin");
+}
+
+export type SignUpState = {
+  error?: string;
+  /** Echoed back so a rejected form does not empty itself. Never the password. */
+  values?: { name?: string; email?: string };
+};
+
+/**
+ * Creates the account for a team member who is already on the allowlist.
+ *
+ * This exists because the Neon console cannot give a user a password — it
+ * creates the user record without a credential account, so a user made there
+ * has no way to sign in at all. Rather than depend on project email being
+ * configured for a reset link, the person creates their own account here.
+ *
+ * The allowlist is checked *before* the account is created, so a stranger who
+ * finds this page never gets a Neon Auth account at all. That is stricter than
+ * /admin, where anyone may hold an account and is merely refused entry.
+ */
+export async function signUp(
+  _prev: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirmPassword") ?? "");
+  const values = { name, email };
+
+  if (!name || !email) {
+    return { error: "נא למלא שם וכתובת אימייל.", values };
+  }
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return {
+      error: `הסיסמה חייבת להכיל לפחות ${MIN_PASSWORD_LENGTH} תווים.`,
+      values,
+    };
+  }
+  if (password !== confirm) {
+    return { error: "הסיסמאות אינן זהות.", values };
+  }
+
+  if (!isAllowedAdmin(email)) {
+    // Same reply either way, but an empty allowlist is a misconfiguration
+    // rather than a rejection, and whoever is setting this up needs to see it.
+    if (adminEmails().length === 0) {
+      console.error("[signUp] ADMIN_EMAILS is empty — nobody can register.");
+    }
+    return {
+      error: "הכתובת הזו אינה מורשית לאזור הזה. פנו למנהל המערכת.",
+      values,
+    };
+  }
+
+  try {
+    const { error } = await getAuth().signUp.email({ name, email, password });
+    if (error) {
+      console.error("[signUp]", error);
+      return {
+        error:
+          "יצירת החשבון נכשלה. ייתכן שכבר קיים חשבון עם הכתובת הזו — נסו להתחבר או לאפס סיסמה.",
+        values,
+      };
+    }
+  } catch (caught) {
+    console.error("[signUp]", caught);
+    return { error: "יצירת החשבון נכשלה. נסו שוב.", values };
+  }
+
+  // Neon Auth signs the new account in, so this lands on the dashboard. If that
+  // is ever turned off the redirect falls through to sign-in, where the
+  // credentials just chosen work — never a dead end either way.
   redirect("/admin");
 }
 

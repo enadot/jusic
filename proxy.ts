@@ -20,6 +20,19 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Everything under /admin except the two pages a signed-out user must reach.
-  matcher: ["/admin((?!/sign-in|/no-access).*)"],
+  /**
+   * Everything under /admin except the pages a signed-out user must reach.
+   *
+   * Every route that exists to get someone *in* has to be listed here. A route
+   * left out is protected, so an anonymous visitor is redirected to sign-in —
+   * which for /admin/forgot-password looks exactly like a login that failed,
+   * and makes an emailed reset link dead on arrival. Add a route under /admin
+   * that a signed-out user needs, and add it here in the same commit.
+   *
+   * The literal has to stay inline: Next reads this matcher statically, so it
+   * cannot be built from a shared constant.
+   */
+  matcher: [
+    "/admin((?!/sign-in|/sign-up|/no-access|/forgot-password|/reset-password).*)",
+  ],
 };

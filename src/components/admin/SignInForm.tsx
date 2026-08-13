@@ -52,12 +52,21 @@ export function SignInForm() {
         </div>
       </form>
 
-      <p className="m-0 text-center text-[14px]">
+      <p className="m-0 flex flex-wrap justify-center gap-x-3 gap-y-1 text-center text-[14px]">
         <Link
           href="/admin/forgot-password"
           className="text-text-secondary underline underline-offset-4 hover:text-text-primary"
         >
           שכחתי סיסמה
+        </Link>
+        <span aria-hidden="true" className="text-text-tertiary">
+          ·
+        </span>
+        <Link
+          href="/admin/sign-up"
+          className="text-text-secondary underline underline-offset-4 hover:text-text-primary"
+        >
+          יצירת חשבון
         </Link>
       </p>
     </div>
