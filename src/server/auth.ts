@@ -27,7 +27,29 @@ export function getAuth(): NeonAuth {
     }
     instance = createNeonAuth({
       baseUrl,
-      cookies: { secret },
+      cookies: {
+        secret,
+        /**
+         * Required for Google sign-in — do not drop back to the default.
+         *
+         * The SDK defaults to sameSite: "strict". The OAuth session is not
+         * established by the API route but by the middleware in proxy.ts: Neon
+         * sends the browser back to the callback URL carrying a verifier query
+         * param, and the middleware trades it plus a `session_challange` cookie
+         * for the real session cookie.
+         *
+         * That return trip is a top-level cross-site navigation, and a strict
+         * cookie is not sent on one. The challenge never arrives, the exchange
+         * is skipped, /admin sees no session and bounces to the sign-in page —
+         * which looks exactly like a rejected login rather than a dropped
+         * cookie. Password sign-in is unaffected because it never leaves the
+         * origin, so this breaks Google alone.
+         *
+         * "lax" still withholds the cookie from cross-site POSTs, which is the
+         * CSRF case that matters here.
+         */
+        sameSite: "lax",
+      },
       logLevel: "warn",
     });
   }
