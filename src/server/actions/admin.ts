@@ -194,6 +194,26 @@ async function requestOrigin(): Promise<string> {
 export type ResetRequestState = { error?: string; sent?: boolean };
 
 /**
+ * Neon answers "Reset password isn't enabled" with a 400 when the project has
+ * no sending address configured — the single most likely reason this fails, and
+ * one no amount of retrying fixes. /admin is a staff tool, so it says which of
+ * the two it is instead of hiding a configuration fault behind "try again".
+ */
+function resetErrorMessage(cause: unknown): string {
+  const text =
+    cause instanceof Error
+      ? cause.message
+      : typeof cause === "object" && cause !== null && "message" in cause
+        ? String((cause as { message?: unknown }).message ?? "")
+        : String(cause ?? "");
+
+  if (/isn'?t enabled|not enabled/i.test(text)) {
+    return "שליחת מיילים אינה מוגדרת בפרויקט ה־Neon, ולכן אי אפשר לשלוח קישור איפוס. אפשר ליצור חשבון עם סיסמה בעמוד יצירת החשבון, או להתחבר עם Google.";
+  }
+  return "שליחת הקישור נכשלה. נסו שוב.";
+}
+
+/**
  * Step one of "שכחתי סיסמה": ask Neon Auth to mail a reset link.
  *
  * The reply is deliberately identical whether or not the address has an
@@ -215,11 +235,11 @@ export async function requestPasswordReset(
     });
     if (error) {
       console.error("[requestPasswordReset]", error);
-      return { error: "שליחת הקישור נכשלה. נסו שוב." };
+      return { error: resetErrorMessage(error) };
     }
   } catch (caught) {
     console.error("[requestPasswordReset]", caught);
-    return { error: "שליחת הקישור נכשלה. נסו שוב." };
+    return { error: resetErrorMessage(caught) };
   }
 
   return { sent: true };

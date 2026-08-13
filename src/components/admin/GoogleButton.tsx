@@ -26,7 +26,16 @@ export function GoogleButton() {
     try {
       const { error: authError } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/admin",
+        /**
+         * Absolute, not "/admin". The server that resolves this string is Neon
+         * Auth's, on a different origin — a relative path there is ambiguous at
+         * best and resolves against their host at worst. An absolute URL on our
+         * origin is the only unambiguous instruction.
+         *
+         * Neon must also trust this origin for the redirect to be honoured, so
+         * the deployment URL belongs in the project's allowed callback URLs.
+         */
+        callbackURL: `${window.location.origin}/admin`,
       });
       // On success the SDK navigates away, so reaching here means it did not.
       if (authError) {
