@@ -48,6 +48,29 @@ export const apkRelease: {
   fileSize: null,
 };
 
+/**
+ * Identifying details the legal pages print for the company behind the site.
+ *
+ * Same rule as apkRelease: anything null simply does not render, and nothing
+ * here may be guessed. A privacy notice has to identify the entity holding the
+ * data, so these should be filled before the policy is relied on — see
+ * docs/OPEN_ITEMS.md #3.
+ *
+ * `dataRetentionMonths` is how long a contact submission is kept. It is a
+ * commitment made to the visitor, so changing it changes the policy text.
+ */
+export const legalEntity: {
+  companyId: string | null;
+  address: string | null;
+  phone: string | null;
+  dataRetentionMonths: number;
+} = {
+  companyId: null,
+  address: null,
+  phone: null,
+  dataRetentionMonths: 24,
+};
+
 export const mailto = (subject: string) =>
   `mailto:${site.contactEmail}?subject=${encodeURIComponent(subject)}`;
 

@@ -36,7 +36,9 @@ export type Placement =
   | "header"
   | "download"
   | "faq"
-  | "artists";
+  | "artists"
+  /** The copyright form, reached from /legal/copyright rather than the footer. */
+  | "legal";
 
 export type EventParams = {
   placement: Placement;

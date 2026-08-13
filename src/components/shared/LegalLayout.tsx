@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
-import { site } from "@/content/site";
 
 export function LegalLayout({
   title,
@@ -31,21 +30,5 @@ export function LegalLayout({
       </main>
       <SiteFooter />
     </>
-  );
-}
-
-/** Marked stand-in for legal copy the client has not supplied yet. */
-export function PendingCopy({ what }: { what: string }) {
-  return (
-    <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-card)] p-5">
-      <p className="m-0 text-[15px] text-text-secondary">
-        טקסט {what} טרם נמסר לפרסום. עד לקבלת הנוסח המחייב, ניתן לפנות אלינו בכל
-        שאלה בכתובת{" "}
-        <a href={`mailto:${site.contactEmail}`} dir="ltr">
-          {site.contactEmail}
-        </a>
-        .
-      </p>
-    </div>
   );
 }

@@ -109,7 +109,8 @@ never be presented as available. AI is not presented as a product feature.
 
 Everything goes through `track()` in `src/lib/analytics.ts` — no provider calls
 in components. Every event carries a `placement`
-(`hero | platforms | cta | footer | sticky | header | download | faq | artists`).
+(`hero | platforms | cta | footer | sticky | header | download | faq | artists |
+legal`).
 UTM params are captured once per session, attached automatically, and posted
 along with every form submission so a lead can be traced to a campaign.
 
