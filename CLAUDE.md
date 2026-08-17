@@ -45,10 +45,14 @@ src/
 ├── content/site.ts       every user-facing string
 ├── lib/                  analytics, platform, schema, cn, formState, formToken
 ├── server/               server-only: db, queries, actions, auth, validation, spam, webhook
-└── styles/globals.css    design tokens + base
-proxy.ts                  guards /admin (Next 16's middleware)
+├── styles/globals.css    design tokens + base
+└── proxy.ts              guards /admin (Next 16's middleware)
 drizzle/                  generated migrations, committed
 ```
+
+`proxy.ts` belongs **inside `src/`**, beside `app/` — that is where Next looks
+for it. At the repository root nothing loads it and nothing complains, so the
+OAuth return silently stops working. `npm run lint` fails if it moves.
 
 Each home section is self-contained so it can move to its own route without a
 refactor.
