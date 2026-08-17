@@ -1,10 +1,28 @@
 /**
+ * Blanks out the credentials in anything shaped like a connection string.
+ *
+ * This panel prints a driver message verbatim, and `neon()` puts the whole
+ * DATABASE_URL — password and all — into its "not a valid URL" error. Rendering
+ * that would publish the database password to the page. src/server/db catches
+ * the known faults before the driver sees them; this is the second line, for
+ * every message it does not raise itself.
+ */
+function withoutCredentials(message: string): string {
+  return message.replace(
+    /(postgres(?:ql)?:\/\/)[^@\s]+@/gi,
+    "$1<user>:<password>@",
+  );
+}
+
+/**
  * The dashboard is useless without a database, and the most likely cause by far
  * is a missing DATABASE_URL rather than a real outage. Say so plainly instead of
  * throwing an opaque 500.
  */
 export function DbError({ error }: { error: unknown }) {
-  const message = error instanceof Error ? error.message : String(error);
+  const message = withoutCredentials(
+    error instanceof Error ? error.message : String(error),
+  );
 
   return (
     <div className="rounded-[14px] border border-[var(--color-error)]/40 bg-[var(--color-error)]/10 p-6">
