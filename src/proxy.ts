@@ -7,7 +7,11 @@ import { getAuth, SIGN_IN_PATH } from "@/server/auth";
  * on every page and action still checks the allowlist, which the middleware
  * cannot see.
  *
- * Next 16 calls this file proxy.ts (formerly middleware.ts).
+ * Next 16 calls this file proxy.ts (formerly middleware.ts), and looks for it
+ * beside the app directory — src/proxy.ts, not the repository root, because the
+ * routes are under src/app. At the root it is loaded by nothing: the build
+ * passes, requireAdmin() still guards every page, and only the OAuth return
+ * breaks, silently. scripts/check-proxy.mjs fails `npm run lint` if it moves.
  */
 
 /**
