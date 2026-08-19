@@ -3,14 +3,34 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { site } from "@/content/site";
 
+/**
+ * Optional atmosphere plate behind the card — same rules as public/atmos:
+ * abstract, always under a scrim, never people, symbols, text or fake artwork.
+ * Satori rasterises PNG/JPEG only, so this one stays uncompressed by design.
+ * Absent file → the plain gradient card below, which is a valid OG image too.
+ */
+async function atmosphere() {
+  for (const file of ["og.jpg", "og.png"]) {
+    try {
+      const data = await readFile(join(process.cwd(), "public/atmos", file));
+      const mime = file.endsWith(".png") ? "image/png" : "image/jpeg";
+      return `data:${mime};base64,${data.toString("base64")}`;
+    } catch {
+      // not shipped yet — fall through to the next candidate
+    }
+  }
+  return null;
+}
+
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = site.title;
 
 export default async function OpenGraphImage() {
-  const [bold, black] = await Promise.all([
+  const [bold, black, plate] = await Promise.all([
     readFile(join(process.cwd(), "public/fonts/ploni-bold-aaa.woff")),
     readFile(join(process.cwd(), "public/fonts/ploni-black-aaa.woff")),
+    atmosphere(),
   ]);
 
   return new ImageResponse(
@@ -27,6 +47,35 @@ export default async function OpenGraphImage() {
           position: "relative",
         }}
       >
+        {plate ? (
+          <img
+            src={plate}
+            width={size.width}
+            height={size.height}
+            alt=""
+            style={{
+              position: "absolute",
+              top: 0,
+              insetInlineStart: 0,
+              width: size.width,
+              height: size.height,
+              objectFit: "cover",
+            }}
+          />
+        ) : null}
+        {plate ? (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              insetInlineStart: 0,
+              width: size.width,
+              height: size.height,
+              background:
+                "linear-gradient(to left, rgba(15,20,23,0.94), rgba(15,20,23,0.72))",
+            }}
+          />
+        ) : null}
         {/* the single permitted cyan glow */}
         <div
           style={{
