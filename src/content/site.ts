@@ -97,6 +97,10 @@ export const nav = [
   { label: "יצירת קשר", href: "/#contact" },
 ] as const;
 
+export const header = {
+  cta: "האזינו עכשיו",
+} as const;
+
 export const hero = {
   /** Rendered as one H1; the artwork chips sit between the fragments. */
   lines: {
@@ -162,6 +166,18 @@ export const features = {
       body: "אנחנו מאמינים בשקיפות מלאה. מודל התגמול שלנו דואג ליוצרים מהשקל הראשון.",
     },
   ],
+  /**
+   * Labels for the trivia card that illustrates the third feature. Deliberately
+   * generic: the source design filled it with an invented song and invented
+   * artist names, and this site does not put words in an artist's mouth or
+   * invent a catalogue. Newly written, not from the approved design — see
+   * docs/COPY_SUGGESTIONS.md. Swap in a real question once one is supplied.
+   */
+  demo: {
+    label: "טריוויה מוזיקלית",
+    question: "מי מבצע את השיר שמתנגן עכשיו?",
+    options: ["אפשרות א׳", "אפשרות ב׳", "אפשרות ג׳"],
+  },
 } as const;
 
 export const screens = {

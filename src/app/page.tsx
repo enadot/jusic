@@ -1,9 +1,7 @@
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { Hero } from "@/components/sections/Hero";
-import { Ticker } from "@/components/sections/Ticker";
 import { Why } from "@/components/sections/Why";
 import { Features } from "@/components/sections/Features";
-import { Screens } from "@/components/sections/Screens";
 import { Creators } from "@/components/sections/Creators";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -24,12 +22,10 @@ export default function HomePage() {
         ]}
       />
       <SiteHeader />
-      <main id="main" className="pb-24 lg:pb-0">
+      <main id="main" className="pb-24 mid:pb-0">
         <Hero />
-        <Ticker />
         <Why />
         <Features />
-        <Screens />
         <Creators />
         <Faq />
         <FinalCta />

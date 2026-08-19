@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
-import { links, nav, site } from "@/content/site";
+import { header, links, nav, site } from "@/content/site";
 
 /**
  * Sticky header. Transparent over the hero, glass once the page scrolls —
@@ -36,14 +36,14 @@ export function SiteHeader() {
           <Image
             src="/brand/logo-white.png"
             alt={site.wordmark}
-            width={112}
+            width={70}
             height={28}
             priority
             className="h-7 w-auto"
           />
         </Link>
 
-        <nav aria-label="ניווט ראשי" className="hidden gap-6 lg:flex">
+        <nav aria-label="ניווט ראשי" className="hidden gap-6.5 mid:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -62,7 +62,7 @@ export function SiteHeader() {
           size="sm"
           icon="play_arrow"
         >
-          האזינו עכשיו
+          {header.cta}
         </CtaLink>
       </Container>
     </header>

@@ -30,7 +30,7 @@
 | --- | --- | --- |
 | 10 | **פונט** | הבריף הציע Rubik/Heebo; מערכת העיצוב מגדירה **Ploni** (Fontef) והקבצים סופקו. נבחר Ploni. יש לוודא רישיון Web לשימוש בפרודקשן. |
 | 11 | **אייקונים** | מערכת העיצוב טוענת Material Symbols Rounded ומסמנת זאת כתחליף בלבד. הבריף מגדיר `lucide-react`. נבחר lucide, עם מיפוי שמות ב‑`src/components/ui/Icon.tsx`. סמל Android הוא SVG מוטבע (אין לו גליף ב‑lucide). |
-| 12 | **תמונות אווירה** | `public/atmos/` נוצרו ב‑Higgsfield לבקשת הלקוח, בניגוד לכלל ״אין רקעים פוטוגרפיים״ שבמערכת העיצוב. הן מופשטות בלבד, תמיד מתחת ל‑scrim, תמיד `alt=""`. |
+| 12 | **תמונות אווירה** | `public/atmos/` נוצרו ב‑Higgsfield לבקשת הלקוח, בניגוד לכלל ״אין רקעים פוטוגרפיים״ שבמערכת העיצוב. הן מופשטות בלבד, תמיד מתחת ל‑scrim, תמיד `alt=""`. **עדכון:** עם המעבר ל‑`Jusic Home E` הרקע של עמוד הבית שטוח, ולכן `atmos/hero.webp` ו‑`atmos/why.webp` ירדו ממנו (באישור הלקוח). `atmos/download.webp` ו‑`atmos/creators.webp` נשארו. |
 | 13 | **Sanity** | לא נבנה בשלב זה בהחלטת הלקוח. כל התוכן יושב ב‑`src/content/site.ts` במבנה שנועד להתחלף במקור נתונים בלי שינוי ברכיבים. |
 | 18 | **Next 16** | הפרויקט שודרג מ‑15.5 ל‑16.3 כי כל גרסאות `@neondatabase/auth` דורשות `next >= 16`. עלות השדרוג ב‑JS ההתחלתי היא כ‑30KB gz — ראו ARCHITECTURE §תקציבים. `middleware.ts` נקרא עכשיו `proxy.ts`, ו‑`agentRules: false` ב‑`next.config.ts` מונע מ‑Next להוסיף בלוק משלו ל‑CLAUDE.md בכל `next dev`. |
 | 19 | **Neon Auth ב‑beta** | `@neondatabase/auth` מפורסם רק בתגי beta (`0.4.2-beta`), ולכן הגרסה **מוצמדת בדיוק** ב‑`package.json`. הוא מוגבל ל‑`/admin` ואינו נטען באף עמוד שיווקי. |

@@ -1,69 +1,82 @@
 import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
-import { cover, hero, links } from "@/content/site";
+import { hero, links, screens, tickerWords } from "@/content/site";
 
-/** Inline circular artwork chip set inside the headline. Decorative. */
-function Chip({ n, priority = false }: { n: number; priority?: boolean }) {
+/**
+ * A phone in its frame. The frame is a fixed pixel width and the screenshot
+ * fills it, so the 11px bezel is the only thing between the two — which is why
+ * the `sizes` below are the frame width minus 22, not the frame width.
+ */
+function Phone({
+  src,
+  width,
+  priority = false,
+  className,
+  sizes,
+}: {
+  src: string;
+  width: number;
+  priority?: boolean;
+  className?: string;
+  sizes: string;
+}) {
   return (
-    <Image
-      src={cover(n)}
-      alt=""
-      width={120}
-      height={120}
-      priority={priority}
-      className="inlineart inline-block"
-    />
+    <div
+      className={`rounded-[44px] border border-white/10 bg-[var(--ink-950)] p-[11px] shadow-[var(--shadow-raised)] ${className ?? ""}`}
+      style={{ width }}
+    >
+      <Image
+        src={src}
+        alt={screens.alt}
+        width={1440}
+        height={2936}
+        priority={priority}
+        quality={70}
+        sizes={sizes}
+        className="block h-auto w-full rounded-[34px]"
+      />
+    </div>
   );
 }
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-[92vh] items-center overflow-hidden">
-      {/* Atmosphere: a single ambient field, well under the text scrim. */}
-      <Image
-        src="/atmos/hero.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="pointer-events-none object-cover opacity-[0.18]"
-      />
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(200deg, var(--color-ink-800) 0%, var(--color-ink-900) 55%)",
+      }}
+    >
+      {/* The one lighting effect: a soft cyan bloom behind the phones. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute -bottom-90 h-[900px] w-[900px] rounded-full blur-[30px]"
         style={{
+          insetInlineEnd: "-12%",
           background:
-            "linear-gradient(to bottom, rgb(15 20 23 / 0.72), rgb(15 20 23 / 0.94))",
-        }}
-      />
-      {/* The one permitted lighting effect: a soft cyan radial glow. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-70 h-[820px] w-[820px] rounded-full blur-[30px]"
-        style={{
-          insetInlineStart: "30%",
-          background:
-            "radial-gradient(circle, rgb(30 176 213 / 0.26), transparent 62%)",
+            "radial-gradient(circle, rgb(30 176 213 / 0.3), transparent 62%)",
         }}
       />
 
-      <Container className="relative pt-35 pb-20">
-        <h1 className="mega">
-          {hero.lines.a} <Chip n={1} priority /> {hero.lines.b}
-          <br />
-          {hero.lines.c} <Chip n={4} priority /> {hero.lines.d}
-          <br />
-          <span className="text-cyan-400">
-            {hero.lines.e} <Chip n={7} priority /> {hero.lines.f}
-          </span>
-        </h1>
+      <Container className="relative grid items-center gap-10 pt-35 pb-22 mid:grid-cols-[1.15fr_0.85fr]">
+        <div>
+          <h1 className="mega">
+            {hero.lines.a} {hero.lines.b}
+            <br />
+            {hero.lines.c} {hero.lines.d}
+            <br />
+            <span className="text-cyan-400">
+              {hero.lines.e} {hero.lines.f}
+            </span>
+          </h1>
 
-        <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-          <p className="m-0 max-w-[520px] text-[17px] leading-[1.6] font-bold text-text-secondary">
+          <p className="mt-6 mb-0 max-w-[540px] text-[clamp(17px,1.4vw,22px)] leading-[1.65] font-bold text-text-secondary">
             {hero.body}
           </p>
-          <div className="flex flex-wrap gap-3 md:justify-end">
+
+          <div className="mt-8 flex flex-wrap gap-3">
             <CtaLink
               href={links.web}
               event="listen_web_click"
@@ -104,6 +117,42 @@ export function Hero() {
               {hero.ctas.apk}
             </CtaLink>
           </div>
+
+          {/* The four claims the ticker used to carry, now stated once. */}
+          <ul className="mt-[26px] flex list-none flex-wrap gap-2.5 p-0 text-[13px] text-text-tertiary">
+            {tickerWords.slice(0, 4).map((word, i) => (
+              <li key={word} className="flex items-center gap-2.5">
+                {i > 0 ? (
+                  <span aria-hidden="true" className="text-cyan-500">
+                    •
+                  </span>
+                ) : null}
+                {word}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/*
+         * min-height is load-bearing: the back phone is absolutely positioned
+         * and contributes no height, so without it the row collapses on first
+         * paint and everything below jumps. The tilt is dropped on phones,
+         * where there is no room for it.
+         */}
+        <div className="relative flex min-h-[480px] justify-center mid:rotate-[-4deg]">
+          <Phone
+            src="/app/playlist.jpg"
+            width={240}
+            sizes="(max-width: 860px) 45vw, 218px"
+            className="absolute start-0 top-[70px] opacity-85"
+          />
+          <Phone
+            src="/app/home.jpg"
+            width={270}
+            priority
+            sizes="(max-width: 860px) 50vw, 248px"
+            className="relative z-2"
+          />
         </div>
       </Container>
     </section>

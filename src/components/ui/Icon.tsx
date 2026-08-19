@@ -1,6 +1,8 @@
 import {
   Bug,
+  ChevronDown,
   Download,
+  Gamepad2,
   Globe,
   Lightbulb,
   Mic,
@@ -68,6 +70,8 @@ const GLYPHS = {
   bug_report: Bug,
   lightbulb: Lightbulb,
   balance: Scale,
+  expand_more: ChevronDown,
+  gamepad: Gamepad2,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof GLYPHS | keyof typeof BRAND_MARKS;

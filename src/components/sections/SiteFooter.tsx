@@ -8,12 +8,12 @@ import { contact, copyrightLine, legalLinks } from "@/content/site";
 export function SiteFooter() {
   return (
     <footer id="contact" className="bg-[var(--ink-950)]">
-      <Container className="pt-16 pb-10">
+      <Container className="pt-16 pb-10 text-center">
         <Reveal sectionId="contact" placement="footer">
-          <h2 className="m-0 max-w-[760px] font-[var(--font-display)] text-[clamp(26px,2.6vw,40px)] font-extrabold tracking-[-0.02em]">
+          <h2 className="m-0 mx-auto max-w-[760px] font-[var(--font-display)] text-[clamp(26px,2.6vw,40px)] font-extrabold tracking-[-0.02em]">
             {contact.heading}
           </h2>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
             {contact.topics.map((topic) => (
               <ContactModalTrigger
                 key={topic.id}
@@ -30,7 +30,7 @@ export function SiteFooter() {
 
         <nav
           aria-label="קישורים משפטיים"
-          className="mt-13 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]"
+          className="mt-12 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px]"
         >
           {legalLinks.map((item, i) => (
             <span key={item.href} className="flex items-center gap-4">

@@ -20,11 +20,15 @@ export function Creators() {
         className="pointer-events-none object-cover opacity-20 mix-blend-overlay"
       />
       <Container className="relative py-22">
-        <Reveal sectionId="creators" placement="cta">
-          <h2 className="mega max-w-[920px] text-white">
+        <Reveal
+          className="mx-auto max-w-[860px] text-center"
+          sectionId="creators"
+          placement="cta"
+        >
+          <h2 className="mega text-white">
             {creators.headingA} <span className="opacity-75">{creators.headingB}</span>
           </h2>
-          <p className="mt-6 max-w-[720px] text-[clamp(17px,1.5vw,22px)] leading-[1.7] text-white/90">
+          <p className="mt-6 text-[clamp(17px,1.5vw,22px)] leading-[1.7] text-white/90">
             {creators.body}
           </p>
           <div className="mt-8">

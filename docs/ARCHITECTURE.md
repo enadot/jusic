@@ -27,7 +27,7 @@
 | מקור | מה הוא קובע |
 | --- | --- |
 | `docs/PROJECT_BRIEF.md` | Stack, כללי RTL, כללי תוכן, אנליטיקס, נגישות, Definition of Done |
-| Claude Design project `750b974f`, variant **`Jusic Home F - Kinetic Type`** | הפריסה, הטיפוגרפיה והטקסטים של עמוד הבית |
+| Claude Design project `750b974f`, variant **`Jusic Home E - Immersive Split`** | הפריסה, הטיפוגרפיה והטקסטים של עמוד הבית |
 | `jusic-design-system-bd48b83e` (`readme.md` + `tokens/`) | חוקי השפה הוויזואלית — צבע, צורה, תנועה, טיפוגרפיה |
 
 מסמך העיצוב וה‑Design System גוברים בשאלות ויזואליות; הבריף גובר בשאלות של
@@ -143,7 +143,7 @@ export הוא אובייקט שטוח יחסית שמתאים אחד‑לאחד 
    `--gradient-brand`, `--dur-base`…), ממופים אל טוקני `@theme`. הם קיימים כדי
    שהמרקאפ המיובא מהעיצוב יקרא 1:1 מול המקור.
 3. **`@layer base`** — reset, אלמנטים, ומחלקות התצוגה המשותפות
-   (`.mega`, `.outline-word`, `.inlineart`, `.rv`, `.skip-link`).
+   (`.mega`, `.kw`, `.outline-word`, `.rv`, `.skip-link`).
 
 > **מלכודת שנפלנו בה, ותועדה בקוד:** ב‑Tailwind v4 ה‑utilities יושבים
 > ב‑`@layer utilities`, ו‑CSS **לא‑מלוירת גוברת על כל CSS מלוירת** ללא קשר
@@ -178,7 +178,12 @@ export הוא אובייקט שטוח יחסית שמתאים אחד‑לאחד 
   מזויפות.
 - תמיד מתחת ל‑scrim, בשקיפות 14–20%, כך שיחסי הניגודיות של הטקסט לא נפגעים.
 - תמיד `alt=""` — הן דקורטיביות.
-- WebP, 10–44KB כל אחת. רק תמונת ה‑Hero היא `priority`.
+- WebP, 10–44KB כל אחת, ואף אחת מהן אינה `priority`.
+
+עם המעבר ל‑`Jusic Home E` עמוד הבית עבר לרקע שטוח, ולכן `atmos/hero.webp`
+ו‑`atmos/why.webp` ירדו ממנו. נשארו `atmos/download.webp` בעמוד ההורדה
+ו‑`atmos/creators.webp` מעל ה‑gradient בסקשן היוצרים. ה‑`priority` היחיד
+בעמוד הבית הוא כעת צילום המסך הקדמי בהירו.
 
 ---
 

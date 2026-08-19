@@ -67,6 +67,12 @@
   /* --- motion ---------------------------------------------------------- */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- breakpoint ------------------------------------------------------ */
+  /* The source design collapses every two-column block at 860px, which sits
+     between Tailwind's md (768) and lg (1024). `mid:` is that breakpoint. It
+     has to stay in step with the gutter override at the bottom of this file. */
+  --breakpoint-mid: 861px;
 }
 
 /* --------------------------------------------------------------------------
@@ -199,6 +205,16 @@ a:hover {
   margin: 0;
 }
 
+/* Bigger and tighter than .mega: the keyword type carrying a whole column. */
+.kw {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-size: clamp(56px, 8.5vw, 128px);
+  margin: 0;
+}
+
 .outline-word {
   color: transparent;
   -webkit-text-stroke: 2px var(--ink-500);
@@ -209,17 +225,6 @@ a:hover {
 
 .outline-word-cyan {
   -webkit-text-stroke-color: var(--cyan-600);
-}
-
-/* Inline circular artwork chips set inside a headline. */
-.inlineart {
-  height: 0.82em;
-  width: 1.7em;
-  object-fit: cover;
-  border-radius: 999px;
-  vertical-align: -0.1em;
-  margin-inline: 0.12em;
-  border: 1px solid rgb(255 255 255 / 0.14);
 }
 
 /* --------------------------------------------------------------------------
@@ -275,12 +280,6 @@ a:hover {
 .skip-link:focus {
   top: 16px;
   color: var(--text-on-cyan);
-}
-
-@media (max-width: 860px) {
-  .inlineart {
-    width: 1.3em;
-  }
 }
 
 /* --------------------------------------------------------------------------

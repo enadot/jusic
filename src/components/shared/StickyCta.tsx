@@ -25,7 +25,7 @@ export function StickyCta() {
 
   return (
     <div
-      className="fixed inset-x-4 bottom-4 z-30 lg:hidden"
+      className="fixed inset-x-4 bottom-4 z-30 mid:hidden"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
       <a
