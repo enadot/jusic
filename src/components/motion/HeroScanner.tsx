@@ -170,14 +170,6 @@ export type ScannerConfig = {
   color2?: string;
   /** The brightest peaks. */
   color3?: string;
-  /**
-   * Chromatic separation between the r/g/b band samples. Zero here, and that is
-   * deliberate: any spread at all samples three different palette positions per
-   * pixel, and the violet-to-pink demo palette hides that while a cyan one turns
-   * it into green and yellow fringes — a third brand colour the system forbids.
-   * At 0 every channel reads the same intensity, so the field is exactly the
-   * ramp between color1, color2 and color3.
-   */
   speed?: number;
   sweepSpeed?: number;
   sweepWidth?: number;
@@ -189,6 +181,14 @@ export type ScannerConfig = {
   lineSharpness?: number;
   glow?: number;
   scanDirection?: keyof typeof DIRECTION;
+  /**
+   * Chromatic separation between the r/g/b band samples. Zero here, and that is
+   * deliberate: any spread at all samples three different palette positions per
+   * pixel, and the violet-to-pink demo palette hides that while a cyan one turns
+   * it into green and yellow fringes — a third brand colour the system forbids.
+   * At 0 every channel reads the same intensity, so the field is exactly the
+   * ramp between color1, color2 and color3.
+   */
   colorSpread?: number;
   brightness?: number;
   contrast?: number;
