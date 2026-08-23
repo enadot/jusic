@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
+import { HeroScanner } from "@/components/motion/HeroScanner";
 import { FoldText } from "@/components/ui/FoldText";
 import { hero, links, screens, tickerWords } from "@/content/site";
 
@@ -53,6 +54,14 @@ export function Hero() {
           "linear-gradient(200deg, var(--color-ink-800) 0%, var(--color-ink-900) 55%)",
       }}
     >
+      {/*
+       * The signal field. It is decoration and it is loaded like decoration:
+       * `ogl` arrives on idle in its own chunk, so the Hero paints without it
+       * and simply keeps its gradient if it never comes. Masked away at the top
+       * and bottom edges so it never fights the header or the section seam.
+       */}
+      <HeroScanner className="hero-scanner pointer-events-none absolute inset-0" />
+
       {/* The one lighting effect: a soft cyan bloom behind the phones. */}
       <div
         aria-hidden="true"

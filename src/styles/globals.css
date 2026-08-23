@@ -401,6 +401,35 @@ html.js-anim [data-anim-lines] .line-mask > span {
 }
 
 /* --------------------------------------------------------------------------
+   The Hero signal field (src/components/motion/HeroScanner.tsx)
+
+   The canvas is inserted from JS once `ogl` lands, so the fade belongs to the
+   canvas itself — there is no earlier moment to transition from.
+   -------------------------------------------------------------------------- */
+.hero-scanner {
+  /* Off at the header and off at the seam with the next section, so the field
+     never draws a hard edge. Vertical only: no reading direction involved. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 18%,
+    #000 68%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 68%, transparent 100%);
+}
+
+.hero-scanner canvas {
+  animation: scanner-in 900ms var(--ease-out) both;
+}
+
+@keyframes scanner-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
    FoldText — panels that unfold around a hinge (src/components/ui/FoldText.tsx)
 
    Same contract as the mask above and for the same reason: the Hero headline
@@ -540,6 +569,10 @@ details[open]::details-content {
   .fold-piece,
   .fold-piece::after {
     animation: none;
+  }
+  /* Belt and braces: HeroScanner never mounts its canvas under `reduce`. */
+  .hero-scanner canvas {
+    display: none;
   }
   html.js-anim .wipe {
     background-image: none;

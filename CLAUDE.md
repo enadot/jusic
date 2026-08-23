@@ -18,7 +18,7 @@ belong to the product?* If it belongs to the product, do not build it here.
 | Data | Neon Postgres + Drizzle — contact form submissions only |
 | Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + `ADMIN_EMAILS` allowlist |
 | Validation | `zod`, server-side only |
-| Motion | CSS + `IntersectionObserver` everywhere; `gsap` on the home page only |
+| Motion | CSS + `IntersectionObserver` everywhere; `gsap` + `ogl` on the home page only |
 | Package manager | npm |
 | Deploy | Vercel |
 
@@ -37,7 +37,13 @@ the route's JS first. `src/components/ui/FoldText.tsx` — the hero headline's
 unfold — is adapted from React Bits but is deliberately a **server component
 driven by CSS keyframes**: the upstream version imports `gsap` at module scope,
 which would drag the library into the initial bundle of any route that used it.
-Keep it that way.
+Keep it that way. `src/components/motion/HeroScanner.tsx` — the Hero's WebGL
+signal field, adapted from the same library — follows the `HomeMotion` rule
+instead: `ogl` is imported dynamically on idle, the loop stops when the Hero
+scrolls away or the tab is hidden, and nothing is fetched at all under
+`prefers-reduced-motion`. Its `opacity` is a **measured** value, not a taste
+one — the cyan headline line sits on that field and has to clear 3:1. Re-tune it
+and re-measure, or leave it alone.
 
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
