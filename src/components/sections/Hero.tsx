@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
+import { FoldText } from "@/components/ui/FoldText";
 import { hero, links, screens, tickerWords } from "@/content/site";
 
 /**
@@ -67,28 +68,24 @@ export function Hero() {
       <Container className="relative grid items-center gap-10 pt-35 pb-22 mid:grid-cols-[1.15fr_0.85fr]">
         <div>
           {/*
-           * Split into rows in the markup rather than by a runtime splitter:
-           * nothing to re-split on resize, and no splitter anywhere near
-           * Hebrew. The reveal is CSS, not GSAP — this is the LCP element and
-           * it cannot wait for a dynamic import.
+           * Split into rows and words in the markup rather than by a runtime
+           * splitter: nothing to re-split on resize, and no splitter anywhere
+           * near Hebrew. The unfold is CSS, not GSAP — this is an LCP candidate
+           * and it cannot wait for a dynamic import.
            */}
-          <h1 className="mega hero-lines">
-            <span className="line-mask">
-              <span>
-                {hero.lines.a} {hero.lines.b}
-              </span>
-            </span>
-            <span className="line-mask">
-              <span>
-                {hero.lines.c} {hero.lines.d}
-              </span>
-            </span>
-            <span className="line-mask">
-              <span className="text-cyan-400">
-                {hero.lines.e} {hero.lines.f}
-              </span>
-            </span>
-          </h1>
+          <FoldText
+            as="h1"
+            className="mega hero-fold"
+            lines={[
+              { text: `${hero.lines.a} ${hero.lines.b}` },
+              { text: `${hero.lines.c} ${hero.lines.d}` },
+              { text: `${hero.lines.e} ${hero.lines.f}`, className: "text-cyan-400" },
+            ]}
+            duration={0.6}
+            stagger={0.05}
+            perspective={900}
+            creaseShading={0.55}
+          />
 
           <p
             data-anim="hero-body"

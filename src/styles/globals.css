@@ -382,11 +382,10 @@ html.js-anim [data-anim-lines] .line-mask > span {
 }
 
 /*
- * The Hero headline is deliberately NOT animated by GSAP: it is the LCP
- * element, and starting it at opacity 0 would push LCP out by the whole
- * import + delay. A CSS mask reveal runs in the first frame instead, and the
- * lines are split in the markup — no runtime splitter, nothing to re-split on
- * resize, and no risk of a splitter mangling Hebrew.
+ * Scroll-revealed headings are pre-split into rows in the markup and masked
+ * here — no runtime splitter, nothing to re-split on resize, and no risk of a
+ * splitter mangling Hebrew. The Hero headline uses FoldText below instead; it
+ * is an LCP candidate and cannot wait on the GSAP chunk at all.
  */
 .line-mask {
   display: block;
@@ -401,23 +400,67 @@ html.js-anim [data-anim-lines] .line-mask > span {
   display: block;
 }
 
-.hero-lines .line-mask > span {
-  animation: line-rise var(--dur-reveal) var(--ease-out) both;
+/* --------------------------------------------------------------------------
+   FoldText — panels that unfold around a hinge (src/components/ui/FoldText.tsx)
+
+   Same contract as the mask above and for the same reason: the Hero headline
+   cannot wait on the GSAP chunk, so the whole effect is CSS in the first frame.
+   The component sets the geometry as custom properties on the root; nothing
+   here knows which hinge it is drawing.
+   -------------------------------------------------------------------------- */
+.fold-text {
+  margin: 0;
 }
 
-.hero-lines .line-mask:nth-of-type(2) > span {
-  animation-delay: 70ms;
+.fold-line {
+  display: block;
+  /* On the line, not the panel: one vanishing point per line reads as a single
+     sheet folding open, where a perspective per word reads as nine of them. */
+  perspective: var(--fold-perspective, 760px);
+  perspective-origin: 50% 0;
 }
 
-.hero-lines .line-mask:nth-of-type(3) > span {
-  animation-delay: 140ms;
+.fold-piece {
+  position: relative;
+  display: inline-block;
+  transform-origin: var(--fold-origin, 50% 0%);
+  backface-visibility: hidden;
+  animation: fold-in var(--fold-duration, 0.6s) var(--fold-ease, var(--ease-out)) both;
+  animation-delay: calc(var(--i, 0) * var(--fold-stagger, 0.045s));
 }
 
-@keyframes line-rise {
+/* The crease: the panel's far edge is turned away from the light while it is
+   folded, so it is shaded and lifts as it lands. Normal blending, not the
+   source component's `multiply` — on a #0F1417 field multiply does nothing. */
+.fold-piece::after {
+  content: "";
+  position: absolute;
+  inset: -0.06em -0.04em;
+  pointer-events: none;
+  background-image: var(--fold-crease-image);
+  opacity: 0;
+  animation: fold-crease var(--fold-duration, 0.6s) var(--fold-ease, var(--ease-out)) both;
+  animation-delay: calc(var(--i, 0) * var(--fold-stagger, 0.045s));
+}
+
+@keyframes fold-in {
   from {
-    transform: translateY(0.42em);
     opacity: 0;
+    transform: var(--fold-from, rotateX(-92deg));
   }
+}
+
+@keyframes fold-crease {
+  from {
+    opacity: var(--fold-crease, 0.5);
+  }
+}
+
+/* The Hero headline, tighter than .mega: three short lines carrying the top of
+   the page want to read as one block, and the fold has no overflow mask to
+   clip Hebrew descenders against. */
+.hero-fold {
+  line-height: 0.94;
 }
 
 /*
@@ -494,7 +537,8 @@ details[open]::details-content {
   html.js-anim [data-anim-lines] .line-mask > span {
     opacity: 1;
   }
-  .hero-lines .line-mask > span {
+  .fold-piece,
+  .fold-piece::after {
     animation: none;
   }
   html.js-anim .wipe {

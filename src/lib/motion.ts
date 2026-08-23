@@ -44,7 +44,7 @@ function all(root: ParentNode, selector: string) {
  * Hero, on load.
  *
  * The headline and the phones are absent on purpose — they are the page's two
- * LCP candidates, and both are revealed by CSS in the first frame (.hero-lines
+ * LCP candidates, and both are revealed by CSS in the first frame (FoldText
  * and .phone-back in globals.css). Starting either at opacity 0 here would hold
  * the largest paint back until the dynamic import resolves.
  */

@@ -33,7 +33,11 @@ from-states in `globals.css` apply only while the guard script in
 if the chunk never lands. Never animate an LCP candidate from `opacity: 0` —
 the hero headline and the phones are revealed by CSS in the first frame for
 exactly that reason. Do not reach for GSAP on another route without measuring
-the route's JS first.
+the route's JS first. `src/components/ui/FoldText.tsx` — the hero headline's
+unfold — is adapted from React Bits but is deliberately a **server component
+driven by CSS keyframes**: the upstream version imports `gsap` at module scope,
+which would drag the library into the initial bundle of any route that used it.
+Keep it that way.
 
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
@@ -46,7 +50,7 @@ Import server actions by name; import types from `src/lib/`, not from a
 src/
 ├── app/                  routes, sitemap.ts, robots.ts, opengraph-image.tsx
 ├── components/
-│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field
+│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field, FoldText
 │   ├── sections/         one file per home-page section
 │   ├── download/         /download-only components
 │   ├── forms/            contact modal trigger + form
