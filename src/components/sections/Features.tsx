@@ -13,7 +13,7 @@ import { cover, features } from "@/content/site";
 /** Recommendations: a staggered grid of artwork. */
 function RecoDemo() {
   return (
-    <div className="mx-auto grid max-w-[420px] grid-cols-3 gap-3">
+    <div data-anim-demo="reco" className="mx-auto grid max-w-[420px] grid-cols-3 gap-3">
       {[1, 2, 3, 4, 5, 6].map((n, i) => (
         <Image
           key={n}
@@ -37,7 +37,7 @@ function RecoDemo() {
  */
 function StoryDemo() {
   return (
-    <div className="flex flex-wrap justify-center gap-3">
+    <div data-anim-demo="story" className="flex flex-wrap justify-center gap-3">
       {[3, 4, 5, 6, 7].map((n, i) => (
         <div
           key={n}
@@ -60,7 +60,10 @@ function StoryDemo() {
 /** Trivia: the shape of a question, with no invented question inside it. */
 function GameDemo() {
   return (
-    <div className="mx-auto max-w-[400px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]">
+    <div
+      data-anim-demo="game"
+      className="mx-auto max-w-[400px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]"
+    >
       <div className="mb-3.5 flex items-center gap-2.5">
         <Icon name="gamepad" size={22} className="text-cyan-500" />
         <b>{features.demo.label}</b>
@@ -68,7 +71,7 @@ function GameDemo() {
       <p className="mt-0 mb-3.5 text-[var(--text-body-lg)] font-bold">
         {features.demo.question}
       </p>
-      <ul className="m-0 flex list-none flex-col gap-2 p-0">
+      <ul data-anim-group="game-options" className="m-0 flex list-none flex-col gap-2 p-0">
         {features.demo.options.map((option, i) => (
           <li
             key={option}
@@ -99,14 +102,18 @@ const BAND_BG = ["bg-ink-900", "bg-ink-800", "bg-ink-900"];
 function BandHeading({ title }: { title: string }) {
   const [first, ...rest] = title.split(" ");
   return (
-    <h3 className="kw text-[clamp(44px,6.5vw,100px)]">
-      {first}
-      {rest.length > 0 ? (
-        <>
-          {" "}
-          <span className="text-cyan-400">{rest.join(" ")}</span>
-        </>
-      ) : null}
+    <h3 className="kw text-[clamp(44px,6.5vw,100px)]" data-anim-lines="">
+      <span className="line-mask">
+        <span>
+          {first}
+          {rest.length > 0 ? (
+            <>
+              {" "}
+              <span className="text-cyan-400">{rest.join(" ")}</span>
+            </>
+          ) : null}
+        </span>
+      </span>
     </h3>
   );
 }
@@ -118,10 +125,14 @@ export function Features() {
   return (
     <section id="features">
       <Container className="pt-25">
-        <Reveal sectionId="features" placement="cta">
-          <h2 className="mega">
-            {features.headingA}{" "}
-            <span className="text-cyan-400">{features.headingB}</span>
+        <Reveal sectionId="features" placement="cta" visual={false}>
+          <h2 className="mega" data-anim-lines="">
+            <span className="line-mask">
+              <span>
+                {features.headingA}{" "}
+                <span className="text-cyan-400">{features.headingB}</span>
+              </span>
+            </span>
           </h2>
         </Reveal>
       </Container>
@@ -131,6 +142,7 @@ export function Features() {
         return (
           <div
             key={item.title}
+            data-anim-band=""
             className={`mt-12 border-t border-[var(--border-subtle)] ${BAND_BG[i]}`}
           >
             <Container>
@@ -142,18 +154,19 @@ export function Features() {
                * up, so the stack stays in DOM order on phones.
                */}
               <div className="grid items-center gap-14 py-22 mid:grid-cols-2">
+                {/* No Reveal in the bands: these carried no analytics, and
+                    GSAP animates the heading rows and the demo separately. */}
                 <div className={i % 2 ? "mid:order-2" : undefined}>
-                  <Reveal>
-                    <BandHeading title={item.title} />
-                    <p className="mt-5 max-w-[460px] text-[clamp(17px,1.5vw,22px)] leading-[1.65] text-text-secondary">
-                      {item.body}
-                    </p>
-                  </Reveal>
+                  <BandHeading title={item.title} />
+                  <p
+                    data-anim="band-body"
+                    className="mt-5 max-w-[460px] text-[clamp(17px,1.5vw,22px)] leading-[1.65] text-text-secondary"
+                  >
+                    {item.body}
+                  </p>
                 </div>
                 <div className={i % 2 ? "mid:order-1" : undefined}>
-                  <Reveal>
-                    <Demo />
-                  </Reveal>
+                  <Demo />
                 </div>
               </div>
             </Container>
@@ -166,7 +179,10 @@ export function Features() {
         <ul className="m-0 grid list-none gap-4 p-0 pt-14 mid:grid-cols-2">
           {rest.map((item) => (
             <li key={item.title}>
-              <Reveal className="flex h-full items-start gap-5 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6">
+              <div
+                data-anim-card=""
+                className="flex h-full items-start gap-5 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6"
+              >
                 <Image
                   src={cover(item.cover)}
                   alt=""
@@ -181,7 +197,7 @@ export function Features() {
                     {item.body}
                   </p>
                 </div>
-              </Reveal>
+              </div>
             </li>
           ))}
         </ul>

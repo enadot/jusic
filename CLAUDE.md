@@ -18,11 +18,26 @@ belong to the product?* If it belongs to the product, do not build it here.
 | Data | Neon Postgres + Drizzle — contact form submissions only |
 | Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + `ADMIN_EMAILS` allowlist |
 | Validation | `zod`, server-side only |
+| Motion | CSS + `IntersectionObserver` everywhere; `gsap` on the home page only |
 | Package manager | npm |
 | Deploy | Vercel |
 
-Not used: WordPress, jQuery, runtime CSS-in-JS, extra UI kits, extra animation
-libraries.
+Not used: WordPress, jQuery, runtime CSS-in-JS, extra UI kits.
+
+**`gsap` is the one animation library, and it is conditional.** It is loaded by
+`src/components/motion/HomeMotion.tsx` through a dynamic `import()` on idle,
+after the first paint, on `/` and nowhere else — the initial JS of every route
+is unchanged by it. Anything it animates has to be legible without it: the
+from-states in `globals.css` apply only while the guard script in
+`src/app/page.tsx` has put `js-anim` on `<html>`, and that guard removes itself
+if the chunk never lands. Never animate an LCP candidate from `opacity: 0` —
+the hero headline and the phones are revealed by CSS in the first frame for
+exactly that reason. Do not reach for GSAP on another route without measuring
+the route's JS first. `src/components/ui/FoldText.tsx` — the hero headline's
+unfold — is adapted from React Bits but is deliberately a **server component
+driven by CSS keyframes**: the upstream version imports `gsap` at module scope,
+which would drag the library into the initial bundle of any route that used it.
+Keep it that way.
 
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
@@ -35,7 +50,7 @@ Import server actions by name; import types from `src/lib/`, not from a
 src/
 ├── app/                  routes, sitemap.ts, robots.ts, opengraph-image.tsx
 ├── components/
-│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field
+│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field, FoldText
 │   ├── sections/         one file per home-page section
 │   ├── download/         /download-only components
 │   ├── forms/            contact modal trigger + form
