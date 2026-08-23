@@ -356,6 +356,155 @@ a:hover {
 body:has(dialog[open]) {
   overflow: hidden;
 }
+
+/* --------------------------------------------------------------------------
+   Motion layer — from-states for GSAP, the Hero line masks and the Why wipe
+
+   Everything here is inert unless <html> carries `js-anim`, which the inline
+   guard in app/page.tsx adds only when JS is running and reduced motion is off,
+   and removes again after 2.5s if the GSAP chunk never arrives. No class → no
+   from-state → the page is simply its finished frame.
+   -------------------------------------------------------------------------- */
+
+/* From-states. Hidden only while the guard class is present.
+   `data-anim`       — one element GSAP tweens in.
+   `data-anim-group` — its direct children, tweened as a stagger.
+   `data-anim-lines` — a heading pre-split into .line-mask rows, revealed on
+                       scroll (as opposed to the Hero's load-time CSS reveal).
+   `data-anim-step`  — one item in a section that reveals as a block.
+   `data-anim-card`  — a card picked up by ScrollTrigger.batch. */
+html.js-anim [data-anim],
+html.js-anim [data-anim-step],
+html.js-anim [data-anim-card],
+html.js-anim [data-anim-group] > *,
+html.js-anim [data-anim-lines] .line-mask > span {
+  opacity: 0;
+}
+
+/*
+ * The Hero headline is deliberately NOT animated by GSAP: it is the LCP
+ * element, and starting it at opacity 0 would push LCP out by the whole
+ * import + delay. A CSS mask reveal runs in the first frame instead, and the
+ * lines are split in the markup — no runtime splitter, nothing to re-split on
+ * resize, and no risk of a splitter mangling Hebrew.
+ */
+.line-mask {
+  display: block;
+  /* .mega/.kw run at line-height 1–1.08, which clips Hebrew descenders
+     (ק ן ך ץ ף) against overflow:hidden. Bleed out and pull back. */
+  padding: 0.08em 0 0.18em;
+  margin: -0.08em 0 -0.18em;
+  overflow: hidden;
+}
+
+.line-mask > span {
+  display: block;
+}
+
+.hero-lines .line-mask > span {
+  animation: line-rise var(--dur-reveal) var(--ease-out) both;
+}
+
+.hero-lines .line-mask:nth-of-type(2) > span {
+  animation-delay: 70ms;
+}
+
+.hero-lines .line-mask:nth-of-type(3) > span {
+  animation-delay: 140ms;
+}
+
+@keyframes line-rise {
+  from {
+    transform: translateY(0.42em);
+    opacity: 0;
+  }
+}
+
+/*
+ * The back phone slides out from behind the front one. Transform only, and no
+ * from-state: the phone pair is the page's largest paint, so it must be on the
+ * screen from the first frame — never waiting on the GSAP chunk. The offset is
+ * physical because the geometry is: the phone is positioned at the inline
+ * start, which under dir="rtl" puts it to the side the front phone hides.
+ */
+.phone-back {
+  animation: phone-slide 900ms 120ms var(--ease-out) both;
+}
+
+@keyframes phone-slide {
+  from {
+    transform: translateX(-18%); /* rtl-allow: physical, see above */
+  }
+}
+
+/*
+ * The one scroll-scrubbed moment: a luminance wipe across the second half of
+ * the Why heading, filling in with the reading direction.
+ *
+ * The gradient axis is physical on purpose — it has to be, since the wipe
+ * follows the text — and it is paired with the page's fixed dir="rtl". GSAP
+ * scrubs background-position from 0% to 100%, which walks the window from the
+ * base half of the image to the highlighted one. Both ends of the ramp clear
+ * AA (tertiary 9.97:1, white above it), so every frame in between is readable.
+ */
+html.js-anim .wipe {
+  background-image: linear-gradient(
+    to left, /* rtl-allow: the wipe follows the text, and the page is dir="rtl" */
+    var(--text-primary) 50%,
+    var(--text-tertiary) 50%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * FAQ panels. A native <details> does not animate, and the usual workaround —
+ * holding the `open` attribute back through a JS close — trades semantics for
+ * a transition. ::details-content buys the same transition with no JS and no
+ * change to the markup, so keyboard, screen readers and the FAQPage JSON-LD
+ * all keep working exactly as they did. Firefox has no ::details-content yet
+ * and simply opens instantly, which is the correct fallback.
+ */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size var(--dur-base) var(--ease-standard),
+    content-visibility var(--dur-base) var(--ease-standard) allow-discrete;
+}
+
+details[open]::details-content {
+  block-size: auto;
+}
+
+/* Defensive: the guard class is never added under reduced motion, but if it
+   somehow is, nothing here may leave content hidden or mid-wipe. */
+@media (prefers-reduced-motion: reduce) {
+  html.js-anim [data-anim],
+  html.js-anim [data-anim-step],
+  html.js-anim [data-anim-card],
+  html.js-anim [data-anim-group] > *,
+  html.js-anim [data-anim-lines] .line-mask > span {
+    opacity: 1;
+  }
+  .hero-lines .line-mask > span {
+    animation: none;
+  }
+  html.js-anim .wipe {
+    background-image: none;
+    color: var(--text-tertiary);
+  }
+  details::details-content {
+    transition: none;
+  }
+}
 }
 
 /* Token override, kept unlayered alongside the :root block it overrides. */
