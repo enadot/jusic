@@ -433,6 +433,15 @@ export const copyrightLine = `כל הזכויות שמורות לג׳וזיק ($
 export const cover = (n: number) =>
   `/covers/cover-${String(n).padStart(2, "0")}.jpg`;
 
+/**
+ * Artist photography supplied by the client for the "בשבילך" band only. Kept
+ * apart from `cover()` on purpose: those tiles are generic mockup artwork and
+ * are reused across several sections, while these are specific images the
+ * client picked for the recommendations grid. Six files, `reco-01`…`reco-06`.
+ */
+export const recoTile = (n: number) =>
+  `/reco/reco-${String(n).padStart(2, "0")}.jpg`;
+
 /* ---------------------------------------------------------------------------
    /download — the dedicated install page
    --------------------------------------------------------------------------- */

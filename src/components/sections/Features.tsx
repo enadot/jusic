@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
-import { cover, features } from "@/content/site";
+import { cover, features, recoTile } from "@/content/site";
 
 /**
  * The three illustrations beside the feature bands. All three are static and
@@ -10,14 +10,14 @@ import { cover, features } from "@/content/site";
  * be it, and they stay server components, so the bands cost no JavaScript.
  */
 
-/** Recommendations: a staggered grid of artwork. */
+/** Recommendations: a staggered grid of the client-supplied artist photos. */
 function RecoDemo() {
   return (
     <div data-anim-demo="reco" className="mx-auto grid max-w-[420px] grid-cols-3 gap-3">
       {[1, 2, 3, 4, 5, 6].map((n, i) => (
         <Image
           key={n}
-          src={cover(n)}
+          src={recoTile(n)}
           alt=""
           width={400}
           height={400}
