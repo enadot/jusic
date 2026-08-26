@@ -184,13 +184,21 @@ export const features = {
  * The catalogue band: every kind of content in the app, each with a stage of
  * its own rather than a word inside a run-on sentence.
  *
+ * Two tiers, and the split is editorial rather than decorative. `showcase`
+ * holds the four the site had never actually shown — playlists, lessons and
+ * talks, clips, radio — each with a real screen from the app behind it, so
+ * they are proved rather than asserted. `more` holds the four that already own
+ * a stage further up the page (music in the hero, stories in the Stories band,
+ * trivia in the game band) plus podcasts, which needs a name more than a
+ * picture. Move an item between the tiers when that stops being true.
+ *
  * Newly written — the approved design has no such section — but deliberately
- * not new *claims*: seven of the eight lines are the approved wording for that
- * content type, moved out of the sentences it was buried in (`hero.body`,
- * `features.items`, `faq.items[content-types]`, `why.body`). The two that are
- * new are `clips` and the lectures half of `lessons`: neither appears anywhere
- * in the approved copy, and both are here because the client said the app has
- * them. See docs/COPY_SUGGESTIONS.md before rewording either.
+ * not new *claims*: the lines are the approved wording for that content type,
+ * moved out of the sentences it was buried in (`hero.body`, `features.items`,
+ * `faq.items[content-types]`, `why.body`). The two exceptions are `clips` and
+ * the talks half of "שיעורים והרצאות": neither appears anywhere in the approved
+ * copy, and both are here because the client said the app has them — and then
+ * sent the screens that show them. See docs/COPY_SUGGESTIONS.md.
  *
  * Nothing here counts anything. No song totals, no station totals, no artist
  * totals — the moment one of these lines grows a number it is a claim nobody
@@ -200,47 +208,42 @@ export const catalog = {
   headingA: "הכול",
   headingB: "במקום אחד.",
   body: "ג׳וזיק היא לא רק מוזיקה. זה כל התוכן היהודי שאתם מאזינים לו ביום־יום, תחת אפליקציה אחת נקייה ומסוננת.",
-  items: [
-    {
-      icon: "music_note",
-      title: "מוזיקה",
-      body: "מאגר מוזיקה ענק — שירים חדשים ונוסטלגיים, בכל הסגנונות.",
-    },
+  showcase: [
     {
       icon: "queue_music",
       title: "פלייליסטים",
-      body: "פלייליסטים אישיים שנבנים לפי הטעם שלכם ומתאימים לכל מצב רוח.",
-    },
-    {
-      icon: "auto_stories",
-      title: "סטוריז",
-      body: "סטוריז נבחרים של אמנים מהארץ ומהעולם, מסוננים ומותאמים.",
+      body: "פלייליסטים אישיים שנבנים לפי הטעם שלכם, לצד פלייליסטים מוכנים לכל מצב רוח ולכל תקופה בשנה.",
+      shot: "/app/playlists.webp",
+      alt: "מסך הפלייליסטים באפליקציית ג׳וזיק",
     },
     {
       icon: "school",
       title: "שיעורים והרצאות",
-      body: "שיעורי תורה והרצאות להאזנה בכל זמן ובכל מקום.",
-    },
-    {
-      icon: "podcasts",
-      title: "פודקאסטים",
-      body: "פודקאסטים מרתקים מעולם התוכן היהודי.",
-    },
-    {
-      icon: "radio",
-      title: "רדיו חי",
-      body: "תחנות רדיו בשידור חי, בלחיצה אחת.",
+      body: "שיעורי תורה והרצאות מרבנים ומרצים, להאזנה בכל זמן ובכל מקום.",
+      shot: "/app/lessons.webp",
+      alt: "מסך השיעורים באפליקציית ג׳וזיק",
     },
     {
       icon: "movie",
       title: "קליפים",
       body: "קליפים מצולמים של אמנים, בתוך אותה סביבה מסוננת.",
+      shot: "/app/clips.webp",
+      alt: "מסך הקליפים החדשים באפליקציית ג׳וזיק",
     },
     {
-      icon: "gamepad",
-      title: "טריוויה",
-      body: "משחקי טריוויה מוזיקליים — לבד, מול יריבים או בחדר קבוצתי.",
+      icon: "radio",
+      title: "רדיו חי",
+      body: "תחנות רדיו בשידור חי, בלחיצה אחת.",
+      shot: "/app/radio.webp",
+      alt: "מסך תחנות הרדיו באפליקציית ג׳וזיק",
     },
+  ],
+  moreLabel: "וגם",
+  more: [
+    { icon: "music_note", title: "מוזיקה" },
+    { icon: "auto_stories", title: "סטוריז" },
+    { icon: "podcasts", title: "פודקאסטים" },
+    { icon: "gamepad", title: "טריוויה" },
   ],
 } as const;
 
