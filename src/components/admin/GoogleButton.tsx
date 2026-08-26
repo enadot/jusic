@@ -16,6 +16,21 @@ import { authClient } from "@/lib/auth-client";
  */
 const GOOGLE_ERROR = "ההתחברות עם Google נכשלה. נסו שוב.";
 
+/**
+ * Neon answers 403 INVALID_CALLBACKURL when the callbackURL's origin is not one
+ * it trusts — and the origin is whichever host the browser happens to be on. So
+ * the day the site starts serving from www, or from a new domain, sign-in
+ * begins "failing" on a deployment where nothing about the code changed, and
+ * "נסו שוב" sends the admin round the loop forever. Name the cause instead: the
+ * only fix is adding this exact origin to the project's callback URLs in the
+ * Neon console.
+ */
+const UNTRUSTED_ORIGIN_CODE = "INVALID_CALLBACKURL";
+
+function untrustedOriginError(origin: string): string {
+  return `Neon Auth דחה את ההחזרה אל ${origin} — הכתובת אינה ברשימת כתובות ההחזרה המאושרות של הפרויקט. יש להוסיף אותה בקונסולה של Neon; ניסיון נוסף לא יעזור.`;
+}
+
 export function GoogleButton() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -39,7 +54,11 @@ export function GoogleButton() {
       });
       // On success the SDK navigates away, so reaching here means it did not.
       if (authError) {
-        setError(GOOGLE_ERROR);
+        setError(
+          authError.code === UNTRUSTED_ORIGIN_CODE
+            ? untrustedOriginError(window.location.origin)
+            : GOOGLE_ERROR,
+        );
         setPending(false);
       }
     } catch {
