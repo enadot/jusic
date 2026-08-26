@@ -181,6 +181,70 @@ export const features = {
 } as const;
 
 /**
+ * The catalogue band: every kind of content in the app, each with a stage of
+ * its own rather than a word inside a run-on sentence.
+ *
+ * Newly written — the approved design has no such section — but deliberately
+ * not new *claims*: seven of the eight lines are the approved wording for that
+ * content type, moved out of the sentences it was buried in (`hero.body`,
+ * `features.items`, `faq.items[content-types]`, `why.body`). The two that are
+ * new are `clips` and the lectures half of `lessons`: neither appears anywhere
+ * in the approved copy, and both are here because the client said the app has
+ * them. See docs/COPY_SUGGESTIONS.md before rewording either.
+ *
+ * Nothing here counts anything. No song totals, no station totals, no artist
+ * totals — the moment one of these lines grows a number it is a claim nobody
+ * has approved.
+ */
+export const catalog = {
+  headingA: "הכול",
+  headingB: "במקום אחד.",
+  body: "ג׳וזיק היא לא רק מוזיקה. זה כל התוכן היהודי שאתם מאזינים לו ביום־יום, תחת אפליקציה אחת נקייה ומסוננת.",
+  items: [
+    {
+      icon: "music_note",
+      title: "מוזיקה",
+      body: "מאגר מוזיקה ענק — שירים חדשים ונוסטלגיים, בכל הסגנונות.",
+    },
+    {
+      icon: "queue_music",
+      title: "פלייליסטים",
+      body: "פלייליסטים אישיים שנבנים לפי הטעם שלכם ומתאימים לכל מצב רוח.",
+    },
+    {
+      icon: "auto_stories",
+      title: "סטוריז",
+      body: "סטוריז נבחרים של אמנים מהארץ ומהעולם, מסוננים ומותאמים.",
+    },
+    {
+      icon: "school",
+      title: "שיעורים והרצאות",
+      body: "שיעורי תורה והרצאות להאזנה בכל זמן ובכל מקום.",
+    },
+    {
+      icon: "podcasts",
+      title: "פודקאסטים",
+      body: "פודקאסטים מרתקים מעולם התוכן היהודי.",
+    },
+    {
+      icon: "radio",
+      title: "רדיו חי",
+      body: "תחנות רדיו בשידור חי, בלחיצה אחת.",
+    },
+    {
+      icon: "movie",
+      title: "קליפים",
+      body: "קליפים מצולמים של אמנים, בתוך אותה סביבה מסוננת.",
+    },
+    {
+      icon: "gamepad",
+      title: "טריוויה",
+      body: "משחקי טריוויה מוזיקליים — לבד, מול יריבים או בחדר קבוצתי.",
+    },
+  ],
+} as const;
+
+/**
  * The five artist stories behind the Stories band, in the order the client
  * listed them (their source files were `01_Moshe_Klein`, `05_Simcha_Friedman`,
  * `02_Nehorai_Arieli`, `03_Moshe_Klein`, `04_Aviaad_Deraf`). Every poster is a

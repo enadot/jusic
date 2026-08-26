@@ -73,6 +73,11 @@
      between Tailwind's md (768) and lg (1024). `mid:` is that breakpoint. It
      has to stay in step with the gutter override at the bottom of this file. */
   --breakpoint-mid: 861px;
+  /* It is in px, and Tailwind's own sm/md/lg are in rem. Tailwind cannot order
+     media queries across the two units, so it emits `mid` before all of them:
+     mixing `sm:` with `mid:` on the same property lets the sm rule win at every
+     width above 861px. Pair `mid:` with px variants (`min-[560px]:`) or with
+     nothing — never with sm/md/lg. */
 }
 
 /* --------------------------------------------------------------------------

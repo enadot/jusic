@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/sections/SiteHeader";
 import { Hero } from "@/components/sections/Hero";
 import { Why } from "@/components/sections/Why";
 import { Features } from "@/components/sections/Features";
+import { Catalog } from "@/components/sections/Catalog";
 import { Creators } from "@/components/sections/Creators";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -40,6 +41,7 @@ export default function HomePage() {
         <Hero />
         <Why />
         <Features />
+        <Catalog />
         <Creators />
         <Faq />
         <FinalCta />
