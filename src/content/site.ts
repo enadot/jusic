@@ -180,6 +180,44 @@ export const features = {
   },
 } as const;
 
+/**
+ * The five artist stories behind the Stories band, in the order the client
+ * listed them (their source files were `01_Moshe_Klein`, `05_Simcha_Friedman`,
+ * `02_Nehorai_Arieli`, `03_Moshe_Klein`, `04_Aviaad_Deraf`). Every poster is a
+ * frame lifted out of its own clip, so a ring always shows what the story
+ * opens on and the `poster` attribute matches the first thing that plays.
+ *
+ * The rings carry no artist names on purpose. These are real people, and the
+ * clips arrived with transliterated filenames; this site does not guess at the
+ * Hebrew spelling of someone's name. Add a `name` per item once the client
+ * supplies the spellings, and the ring will have somewhere to put it.
+ */
+export const stories = {
+  items: [
+    { src: "/stories/story-1.webm", poster: "/stories/story-1.webp" },
+    { src: "/stories/story-2.webm", poster: "/stories/story-2.webp" },
+    { src: "/stories/story-3.webm", poster: "/stories/story-3.webp" },
+    { src: "/stories/story-4.webm", poster: "/stories/story-4.webp" },
+    { src: "/stories/story-5.webm", poster: "/stories/story-5.webp" },
+  ],
+  /**
+   * Viewer controls. Newly written rather than taken from the approved design,
+   * which has no stories viewer in it — see docs/COPY_SUGGESTIONS.md.
+   */
+  ui: {
+    /** `${open} ${n} מתוך ${total}` — the ring is an icon-only control. */
+    open: "פתיחת סטורי",
+    dialog: "סטוריז של אמנים",
+    close: "סגירה",
+    next: "הסטורי הבא",
+    prev: "הסטורי הקודם",
+    pause: "השהיה",
+    play: "המשך",
+    mute: "השתקה",
+    unmute: "הפעלת קול",
+  },
+} as const;
+
 export const screens = {
   headingA: "נראית טוב.",
   headingB: "נשמעת עוד יותר טוב.",

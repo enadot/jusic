@@ -2,12 +2,15 @@ import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
+import { StoriesStrip } from "@/components/sections/StoriesStrip";
 import { cover, features, recoTile } from "@/content/site";
 
 /**
- * The three illustrations beside the feature bands. All three are static and
- * non-interactive on purpose — they suggest the product without pretending to
- * be it, and they stay server components, so the bands cost no JavaScript.
+ * The three illustrations beside the feature bands. They suggest the product
+ * without pretending to be it. Two of them are static server components and
+ * cost no JavaScript; the stories rings are the exception, because the client
+ * supplied real clips for them and a story that cannot be played is a picture
+ * of a story. Its cost is bounded in StoriesStrip.
  */
 
 /** Recommendations: a staggered grid of the client-supplied artist photos. */
@@ -25,33 +28,6 @@ function RecoDemo() {
           className="aspect-square h-auto w-full rounded-[var(--radius-md)] object-cover shadow-[var(--shadow-card)]"
           style={{ transform: `translateY(${(i % 3) * 12}px)` }}
         />
-      ))}
-    </div>
-  );
-}
-
-/**
- * Stories: artwork in rings. The rings are a flat cyan rather than the brand
- * gradient the source design used — the gradient is spent on Creators, and the
- * system allows one gradient element per page.
- */
-function StoryDemo() {
-  return (
-    <div data-anim-demo="story" className="flex flex-wrap justify-center gap-3">
-      {[3, 4, 5, 6, 7].map((n, i) => (
-        <div
-          key={n}
-          className={`rounded-full p-[3px] ${i < 3 ? "bg-cyan-500" : "bg-[var(--ink-500)]"}`}
-        >
-          <Image
-            src={cover(n)}
-            alt=""
-            width={84}
-            height={84}
-            sizes="84px"
-            className="block h-21 w-21 rounded-full border-[3px] border-[var(--bg)] object-cover"
-          />
-        </div>
       ))}
     </div>
   );
@@ -89,7 +65,12 @@ function GameDemo() {
   );
 }
 
-const DEMOS = [RecoDemo, StoryDemo, GameDemo];
+/*
+ * Stories are the client's clips in rings. The rings are a flat cyan rather
+ * than the brand gradient the source design used — the gradient is spent on
+ * Creators, and the system allows one gradient element per page.
+ */
+const DEMOS = [RecoDemo, StoriesStrip, GameDemo];
 
 /** ink-900 / ink-800 / ink-900, so consecutive bands separate without a rule. */
 const BAND_BG = ["bg-ink-900", "bg-ink-800", "bg-ink-900"];

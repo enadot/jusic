@@ -45,6 +45,16 @@ scrolls away or the tab is hidden, and nothing is fetched at all under
 one — the cyan headline line sits on that field and has to clear 3:1. Re-tune it
 and re-measure, or leave it alone.
 
+**The stories viewer is hand-rolled, and stays that way.** The rings in the
+Stories band open a `<video>` in a native `<dialog>` — segmented progress,
+tap-through and auto-advance are about eighty lines in
+`src/components/sections/StoriesStrip.tsx`. A stories package would put all of
+that in the home page's initial JS, which is the budget with no slack in it.
+The clips live in `public/stories/` as the client delivered them (VP9 webm, not
+re-encoded — re-encoding them came out *larger*), each with a poster lifted
+from its own first seconds, and nothing is fetched until a ring is clicked:
+`preload="none"`, one mounted `<video>`.
+
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
 Import server actions by name; import types from `src/lib/`, not from a
@@ -135,7 +145,7 @@ never be presented as available. AI is not presented as a product feature.
 Everything goes through `track()` in `src/lib/analytics.ts` — no provider calls
 in components. Every event carries a `placement`
 (`hero | platforms | cta | footer | sticky | header | download | faq | artists |
-legal`).
+stories | legal`).
 UTM params are captured once per session, attached automatically, and posted
 along with every form submission so a lead can be traced to a campaign.
 
