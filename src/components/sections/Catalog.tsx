@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
+import { CatalogShowcase } from "@/components/sections/CatalogShowcase";
 import { catalog } from "@/content/site";
 
 /**
@@ -13,13 +13,13 @@ import { catalog } from "@/content/site";
  * a single word in a run-on list, and a word in a list reads as an afterthought
  * however true it is.
  *
- * So the four the site had never shown get a real screen from the app rather
- * than an icon — a screenshot of a radio list settles the question an icon of a
- * radio only raises — and the four that already own a stage further up the page
- * follow as chips, present without competing. Content decides which is which;
- * see `catalog` in src/content/site.ts.
+ * So the four the site had never shown get a wheel of their own and a real
+ * screen from the app beside it — a screenshot of a radio list settles the
+ * question an icon of a radio only raises — and the four that already own a
+ * stage further up the page follow as chips, present without competing.
+ * Content decides which is which; see `catalog` in src/content/site.ts.
  *
- * A server component: four images and eight labels need no JavaScript.
+ * The wheel is the only client component here. Everything else is text.
  */
 export function Catalog() {
   return (
@@ -37,52 +37,7 @@ export function Catalog() {
             {catalog.body}
           </p>
 
-          {/*
-           * Both breakpoints are px on purpose. Tailwind emits its media
-           * queries in source order and cannot compare `min-[560px]` against
-           * `sm` (40rem), so a rem breakpoint mixed with the project's px
-           * `mid` sorts *after* it and quietly wins at every width above it —
-           * `sm:grid-cols-2 mid:grid-cols-4` renders two columns on a 27"
-           * display. Keep the units matched.
-           */}
-          <ul className="m-0 grid list-none gap-4 p-0 pt-12 min-[560px]:grid-cols-2 mid:grid-cols-4">
-            {catalog.showcase.map((item) => (
-              <li key={item.title}>
-                <div className="flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)]">
-                  {/*
-                   * 3:4 of a 1:2 screen, anchored to the top: the app's own
-                   * header and the first rows of content, cut where a screen
-                   * keeps scrolling. The fade is the card's own surface coming
-                   * up to meet the crop — the screen itself is never tinted.
-                   */}
-                  <div className="relative aspect-[3/4] w-full">
-                    <Image
-                      src={item.shot}
-                      alt={item.alt}
-                      fill
-                      sizes="(min-width: 861px) 25vw, (min-width: 560px) 45vw, 90vw"
-                      className="object-cover object-top"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 h-20 bg-[linear-gradient(to_top,var(--surface-card),transparent)]" />
-                  </div>
-
-                  <div className="flex flex-1 flex-col gap-2 p-6 pt-4">
-                    <h3 className="m-0 flex items-center gap-2 text-[19px] font-extrabold">
-                      <Icon
-                        name={item.icon as IconName}
-                        size={20}
-                        className="text-cyan-400"
-                      />
-                      {item.title}
-                    </h3>
-                    <p className="m-0 text-[15px] leading-[1.6] text-text-secondary">
-                      {item.body}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <CatalogShowcase label={catalog.wheelLabel} />
 
           {/* The four that are already staged elsewhere on the page. */}
           <div className="flex flex-wrap items-center gap-3 pt-8">

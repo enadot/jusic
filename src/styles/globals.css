@@ -267,6 +267,137 @@ a:hover {
 }
 
 /* --------------------------------------------------------------------------
+   Option wheel — see components/ui/OptionWheel.tsx
+   -------------------------------------------------------------------------- */
+
+.ow {
+  position: relative;
+  user-select: none;
+  outline: none;
+}
+
+/* Before the layout effect runs — and if JavaScript never arrives — the
+   options are an ordinary column. Only `data-wheel="on"` lifts them onto the
+   curve, so a crawler and a no-JS visitor read a plain list. */
+.ow__item {
+  display: block;
+  width: 100%;
+  padding: 0.15em 0;
+  border: 0;
+  background: none;
+  text-align: start;
+  white-space: nowrap;
+  font-size: var(--ow-font-size);
+  line-height: 1.1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  /* --ow-p runs 0 → 1 as an option reaches the middle of the wheel. */
+  color: color-mix(
+    in srgb,
+    var(--text-primary) calc(var(--ow-p, 0) * 100%),
+    var(--text-tertiary)
+  );
+}
+
+.ow[data-wheel="on"] {
+  overflow: hidden;
+}
+
+.ow[data-wheel="on"] .ow__item {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: var(--ow-inset);
+  width: auto;
+  padding: 0;
+  /* Physical, and deliberately so: the wheel hangs off the start edge, which
+     in this RTL-only site is the right one. */
+  transform-origin: right center;
+  will-change: transform, opacity, filter;
+}
+
+.ow__item--on {
+  font-weight: 700;
+}
+
+.ow__item:focus-visible {
+  outline: 2px solid var(--cyan-400);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Glare — a light sweep across a surface on hover.
+
+   Adapted from React Bits' `GlareHover`, which wraps its content in a React
+   component that only ever sets CSS variables. There is nothing for JavaScript
+   to do here, so it is a class: any surface can opt in, at no cost to any
+   bundle. The global reduced-motion rule above collapses the transition, so
+   the sweep disappears for a visitor who asked for less motion.
+   -------------------------------------------------------------------------- */
+
+.glare {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glare::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    -30deg,
+    transparent 58%,
+    rgb(255 255 255 / 0.06) 68%,
+    rgb(255 255 255 / 0.14) 72%,
+    transparent 82%,
+    transparent 100%
+  );
+  background-size: 260% 260%;
+  background-repeat: no-repeat;
+  background-position: 120% 120%;
+  transition: background-position var(--dur-reveal) var(--ease-standard);
+}
+
+.glare:hover::after,
+.glare:focus-within::after {
+  background-position: -40% -40%;
+}
+
+/* --------------------------------------------------------------------------
+   Click spark — see components/ui/ClickSpark.tsx
+   -------------------------------------------------------------------------- */
+
+.spark {
+  position: absolute;
+  top: var(--spark-y);
+  inset-inline-start: var(--spark-x);
+  width: var(--spark-len);
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  rotate: var(--spark-angle);
+  animation: spark-out var(--dur-base) var(--ease-out) forwards;
+}
+
+@keyframes spark-out {
+  from {
+    translate: var(--spark-near) 0;
+    opacity: 0.9;
+  }
+  to {
+    translate: var(--spark-far) 0;
+    opacity: 0;
+    scale: 0.2 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Skip link
    -------------------------------------------------------------------------- */
 .skip-link {

@@ -238,6 +238,8 @@ export const catalog = {
       alt: "מסך תחנות הרדיו באפליקציית ג׳וזיק",
     },
   ],
+  /** Read aloud as the listbox's name; the options are the titles above. */
+  wheelLabel: "בחירת סוג תוכן",
   moreLabel: "וגם",
   more: [
     { icon: "music_note", title: "מוזיקה" },
