@@ -78,3 +78,16 @@ export function fieldErrors(error: z.ZodError): Record<string, string> {
   }
   return result;
 }
+
+/**
+ * The /admin/team form. Lowercased on the way in so the unique index does the
+ * de-duplication and isAllowedAdmin's comparison is exact — Neon Auth reports
+ * the address in whatever case the person typed at sign-up.
+ */
+export const adminAllowlistSchema = z.object({
+  email: trimmed(200)
+    .min(1, "נא למלא כתובת אימייל")
+    .pipe(z.email("כתובת האימייל אינה תקינה"))
+    .transform((value) => value.toLowerCase()),
+  note: trimmed(120).optional(),
+});

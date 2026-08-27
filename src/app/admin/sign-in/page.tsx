@@ -14,7 +14,7 @@ export default async function SignInPage({
 }) {
   // Already signed in and allowed? Skip the form.
   const user = await getAdminUser();
-  if (user && isAllowedAdmin(user.email)) redirect("/admin");
+  if (user && (await isAllowedAdmin(user.email))) redirect("/admin");
 
   const { reset } = await searchParams;
 

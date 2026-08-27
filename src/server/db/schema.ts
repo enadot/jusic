@@ -4,6 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -80,3 +81,34 @@ export const SUBMISSION_STATUSES = [
   "archived",
 ] as const;
 export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number];
+
+/**
+ * Who may open the dashboard, beyond the ADMIN_EMAILS env allowlist.
+ *
+ * ADMIN_EMAILS stays the root list: it needs no database, it cannot be edited
+ * from the browser, and it is what gets the first person in — and back in if
+ * this table is ever emptied or unreachable. Rows here are the teammates added
+ * afterwards from /admin/team, which is the whole point: a new colleague is a
+ * click, not an environment variable and a redeploy.
+ *
+ * `email` is stored already lowercased (the action does it) and carries a
+ * unique index, so "A@x.com" cannot be added twice under different casing.
+ */
+export const adminAllowlist = pgTable(
+  "admin_allowlist",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+
+    email: text("email").notNull(),
+    /** Free-text label — a name or a role, so a stale row can be recognised. */
+    note: text("note"),
+    /** Email of the admin who added this row. */
+    addedBy: text("added_by"),
+  },
+  (table) => [uniqueIndex("admin_allowlist_email_idx").on(table.email)],
+);
+
+export type AdminAllowlistRow = typeof adminAllowlist.$inferSelect;

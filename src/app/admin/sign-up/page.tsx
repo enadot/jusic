@@ -16,7 +16,7 @@ export const metadata = { title: "יצירת חשבון" };
  */
 export default async function SignUpPage() {
   const user = await getAdminUser();
-  if (user && isAllowedAdmin(user.email)) redirect("/admin");
+  if (user && (await isAllowedAdmin(user.email))) redirect("/admin");
 
   return (
     <div className="flex min-h-dvh items-center justify-center px-5 py-16">

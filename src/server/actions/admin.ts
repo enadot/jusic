@@ -6,15 +6,21 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { getDb } from "../db";
-import { submissions, SUBMISSION_STATUSES } from "../db/schema";
 import {
-  adminEmails,
+  adminAllowlist,
+  submissions,
+  SUBMISSION_STATUSES,
+} from "../db/schema";
+import {
+  envAdminEmails,
   getAuth,
   isAllowedAdmin,
+  isRootAdmin,
   requireAdmin,
   RESET_PASSWORD_PATH,
   SIGN_IN_PATH,
 } from "../auth";
+import { adminAllowlistSchema } from "../validation";
 
 function isStatus(value: unknown): value is (typeof SUBMISSION_STATUSES)[number] {
   return (
@@ -131,11 +137,13 @@ export async function signUp(
     return { error: "הסיסמאות אינן זהות.", values };
   }
 
-  if (!isAllowedAdmin(email)) {
-    // Same reply either way, but an empty allowlist is a misconfiguration
-    // rather than a rejection, and whoever is setting this up needs to see it.
-    if (adminEmails().length === 0) {
-      console.error("[signUp] ADMIN_EMAILS is empty — nobody can register.");
+  if (!(await isAllowedAdmin(email))) {
+    // Same reply either way, but an allowlist with no root address is a
+    // misconfiguration rather than a rejection, and whoever is setting this up
+    // needs to see it: without one, an emptied table locks everyone out for
+    // good.
+    if (envAdminEmails().length === 0) {
+      console.error("[signUp] ADMIN_EMAILS is empty — no root admin exists.");
     }
     return {
       error: "הכתובת הזו אינה מורשית לאזור הזה. פנו למנהל המערכת.",
@@ -285,4 +293,99 @@ export async function resetPassword(
   }
 
   redirect(`${SIGN_IN_PATH}?reset=1`);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard access — the /admin/team screen
+
+   These two write the allowlist that isAllowedAdmin() reads, so they are the
+   only actions here that change who may open the dashboard at all. Both are
+   behind requireAdmin(), which means an admin can add another admin: that is
+   the point of the screen, and it is why the root list in ADMIN_EMAILS stays
+   env-only — it is the one thing nobody can grant themselves.
+   -------------------------------------------------------------------------- */
+
+export type AllowlistState = {
+  error?: string;
+  added?: string;
+  /** Echoed back so a rejected form does not empty itself. */
+  values?: { email?: string; note?: string };
+};
+
+export async function addAdmin(
+  _prev: AllowlistState,
+  formData: FormData,
+): Promise<AllowlistState> {
+  const admin = await requireAdmin();
+
+  const values = {
+    email: String(formData.get("email") ?? ""),
+    note: String(formData.get("note") ?? ""),
+  };
+
+  const parsed = adminAllowlistSchema.safeParse(values);
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "הפרטים אינם תקינים.",
+      values,
+    };
+  }
+  const { email, note } = parsed.data;
+
+  // Already a root admin: adding a row would be a no-op that looks like it did
+  // something, and would later invite someone to "remove" an address the
+  // screen cannot actually revoke.
+  if (isRootAdmin(email)) {
+    return {
+      error: "הכתובת הזו כבר מורשית דרך משתנה הסביבה ואי אפשר לנהל אותה כאן.",
+      values,
+    };
+  }
+
+  try {
+    const inserted = await getDb()
+      .insert(adminAllowlist)
+      .values({ email, note: note || null, addedBy: admin.email })
+      // The unique index makes a double-add harmless; say so rather than
+      // failing on a constraint violation.
+      .onConflictDoNothing({ target: adminAllowlist.email })
+      .returning({ id: adminAllowlist.id });
+
+    if (inserted.length === 0) {
+      return { error: "הכתובת הזו כבר ברשימה.", values };
+    }
+  } catch (caught) {
+    console.error("[addAdmin]", caught);
+    return { error: "ההוספה נכשלה. נסו שוב.", values };
+  }
+
+  revalidatePath("/admin/team");
+  return { added: email };
+}
+
+export async function removeAdmin(formData: FormData): Promise<void> {
+  const admin = await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const [row] = await getDb()
+    .select({ email: adminAllowlist.email })
+    .from(adminAllowlist)
+    .where(eq(adminAllowlist.id, id))
+    .limit(1);
+  if (!row) return;
+
+  /**
+   * Removing your own row would sign you out of the screen you are standing
+   * on — and if you are not also a root admin, out of the dashboard entirely,
+   * with no way back in. Refuse; another admin can do it.
+   */
+  if (row.email === admin.email.toLowerCase() && !isRootAdmin(admin.email)) {
+    return;
+  }
+
+  await getDb().delete(adminAllowlist).where(eq(adminAllowlist.id, id));
+
+  revalidatePath("/admin/team");
 }

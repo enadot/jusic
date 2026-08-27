@@ -15,8 +15,8 @@ belong to the product?* If it belongs to the product, do not build it here.
 | Styling | Tailwind CSS v4, CSS-first `@theme` in `src/styles/globals.css` |
 | Icons | `lucide-react` |
 | Content | `src/content/site.ts` (typed module; Sanity is a later milestone) |
-| Data | Neon Postgres + Drizzle — contact form submissions only |
-| Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + `ADMIN_EMAILS` allowlist |
+| Data | Neon Postgres + Drizzle — contact form submissions and the admin allowlist |
+| Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + a two-half allowlist |
 | Validation | `zod`, server-side only |
 | Motion | CSS + `IntersectionObserver` everywhere; `gsap` + `ogl` on the home page only |
 | Package manager | npm |
@@ -55,6 +55,16 @@ re-encoded — re-encoding them came out *larger*), each with a poster lifted
 from its own first seconds, and nothing is fetched until a ring is clicked:
 `preload="none"`, one mounted `<video>`.
 
+**Dashboard access is a two-half allowlist, and the halves are not
+interchangeable.** `ADMIN_EMAILS` is the **root** list: an env var, unreadable
+to the browser and uneditable from it, checked before the database is touched.
+The `admin_allowlist` table is everyone added since from `/admin/team` — a
+click, no redeploy. `isAllowedAdmin()` unions the two, so a row can never
+revoke a root address, and a database outage narrows access to the root list
+rather than opening the inbox or sealing the dashboard whose own error panel
+explains the outage. **Keep at least one address in `ADMIN_EMAILS`** — it is
+the way back in when the table is empty or unreachable.
+
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
 Import server actions by name; import types from `src/lib/`, not from a
@@ -71,7 +81,7 @@ src/
 │   ├── download/         /download-only components
 │   ├── forms/            contact modal trigger + form
 │   ├── artists/          /artists sections + application form
-│   ├── admin/            dashboard chrome (never imported by the public site)
+│   ├── admin/            dashboard chrome + admin/ui (its own shadcn-style kit)
 │   └── shared/           Container, StickyCta, JsonLd, LegalLayout, UtmCapture
 ├── content/site.ts       every user-facing string
 ├── lib/                  analytics, platform, schema, cn, formState, formToken
