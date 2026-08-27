@@ -498,7 +498,7 @@ a:hover {
     width: auto;
   }
   .dlg[open] {
-    animation: dlg-card var(--dur-base) var(--ease-out);
+    animation: dlg-card var(--dur-sheet) var(--ease-out);
   }
 }
 
@@ -542,16 +542,20 @@ a:hover {
   }
 }
 
+/* The sheet enters from the viewport edge it is pinned to — real travel, not a
+   hint of it. No opacity: a surface sliding in from off-screen has nothing to
+   fade from. */
 @keyframes dlg-rise {
   from {
-    transform: translateY(24px);
-    opacity: 0;
+    transform: translateY(100%);
   }
 }
 
+/* The centred card settles into place: enough travel and scale to read as an
+   entrance, --ease-out so it lands softly. No bounce — the system bans it. */
 @keyframes dlg-card {
   from {
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(24px) scale(0.95);
     opacity: 0;
   }
 }
