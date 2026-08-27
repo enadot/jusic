@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { Container } from "@/components/shared/Container";
-import { Icon } from "@/components/ui/Icon";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { StoriesStrip } from "@/components/sections/StoriesStrip";
-import { cover, features, recoTile } from "@/content/site";
+import { TriviaGame } from "@/components/sections/TriviaGame";
+import { features, recoTile } from "@/content/site";
 
 /**
  * The three illustrations beside the feature bands. They suggest the product
@@ -33,44 +34,13 @@ function RecoDemo() {
   );
 }
 
-/** Trivia: the shape of a question, with no invented question inside it. */
-function GameDemo() {
-  return (
-    <div
-      data-anim-demo="game"
-      className="mx-auto max-w-[400px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]"
-    >
-      <div className="mb-3.5 flex items-center gap-2.5">
-        <Icon name="gamepad" size={22} className="text-cyan-500" />
-        <b>{features.demo.label}</b>
-      </div>
-      <p className="mt-0 mb-3.5 text-[var(--text-body-lg)] font-bold">
-        {features.demo.question}
-      </p>
-      <ul data-anim-group="game-options" className="m-0 flex list-none flex-col gap-2 p-0">
-        {features.demo.options.map((option, i) => (
-          <li
-            key={option}
-            className={
-              i === 0
-                ? "rounded-full border border-cyan-700 bg-cyan-500/[0.14] px-4 py-3 font-semibold text-cyan-300"
-                : "rounded-full border border-transparent bg-[var(--surface-input)] px-4 py-3 font-semibold text-text-secondary"
-            }
-          >
-            {option}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 /*
- * Stories are the client's clips in rings. The rings are a flat cyan rather
- * than the brand gradient the source design used — the gradient is spent on
- * Creators, and the system allows one gradient element per page.
+ * Stories are the client's clips in rings — a flat cyan rather than the brand
+ * gradient the source design used, because the gradient is spent on Creators
+ * and the system allows one gradient element per page. The game is a real,
+ * playable round, not a mock of one.
  */
-const DEMOS = [RecoDemo, StoriesStrip, GameDemo];
+const DEMOS = [RecoDemo, StoriesStrip, TriviaGame];
 
 /** ink-900 / ink-800 / ink-900, so consecutive bands separate without a rule. */
 const BAND_BG = ["bg-ink-900", "bg-ink-800", "bg-ink-900"];
@@ -164,14 +134,12 @@ export function Features() {
                 data-anim-card=""
                 className="flex h-full items-start gap-5 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6"
               >
-                <Image
-                  src={cover(item.cover)}
-                  alt=""
-                  width={400}
-                  height={400}
-                  sizes="64px"
-                  className="h-16 w-16 shrink-0 rounded-[var(--radius-md)] object-cover"
-                />
+                {/* An icon, not artwork: a mockup cover next to "סטוריז" reads
+                    as the story it is not. The circle matches the artists page
+                    cards, which these sit closest to in spirit. */}
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--surface-input)] text-cyan-400">
+                  <Icon name={item.icon as IconName} size={26} />
+                </span>
                 <div>
                   <h3 className="m-0 text-[19px] font-extrabold">{item.title}</h3>
                   <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-text-secondary">

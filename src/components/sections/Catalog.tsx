@@ -37,7 +37,7 @@ export function Catalog() {
             {catalog.body}
           </p>
 
-          <CatalogShowcase label={catalog.wheelLabel} />
+          <CatalogShowcase label={catalog.wheelLabel} hint={catalog.wheelHint} />
 
           {/* The four that are already staged elsewhere on the page. */}
           <div className="flex flex-wrap items-center gap-3 pt-8">

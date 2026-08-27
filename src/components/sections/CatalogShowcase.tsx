@@ -25,26 +25,49 @@ const TITLES = ITEMS.map((item) => item.title);
  * a screen reader get does not depend on which one is showing. Only opacity
  * moves between them.
  */
-export function CatalogShowcase({ label }: { label: string }) {
+export function CatalogShowcase({
+  label,
+  hint,
+}: {
+  label: string;
+  hint: string;
+}) {
   const [index, setIndex] = useState(0);
   const current = ITEMS[index];
 
   return (
     <div className="grid items-center gap-8 pt-12 mid:grid-cols-[1fr_0.85fr] mid:gap-14">
       <div>
-        {/* The spark inherits currentColor, so the wrapper's cyan is the one
-            accent — and the burst marks the tap that swaps the screen, the
-            only tap on this page that changes what you are looking at. */}
-        <ClickSpark className="block w-full text-cyan-400">
-          <OptionWheel
-            items={TITLES}
-            selected={index}
-            onSelect={setIndex}
-            label={label}
-            className="h-[240px] w-full mid:h-[300px]"
-            fontSize={2}
-          />
-        </ClickSpark>
+        {/* The card is what says "control": floating names over the section
+            background read as a headline, the same names on their own surface
+            with a hint above and a marker beside the live row read as a picker.
+            The marker sits at the wheel's centre line, where the chosen name
+            arrives. */}
+        <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]">
+          <p className="m-0 mb-2 text-[13px] font-bold tracking-[0.1em] text-text-tertiary uppercase">
+            {hint}
+          </p>
+          {/* The spark inherits currentColor, so the wrapper's cyan is the one
+              accent — and the burst marks the tap that swaps the screen, the
+              only tap on this page that changes what you are looking at. */}
+          <ClickSpark className="block w-full text-cyan-400">
+            <div className="relative w-full">
+              <span
+                aria-hidden="true"
+                className="absolute start-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-full bg-cyan-400"
+              />
+              <OptionWheel
+                items={TITLES}
+                selected={index}
+                onSelect={setIndex}
+                label={label}
+                className="h-[264px] w-full mid:h-[320px]"
+                fontSize={2.5}
+                inset={20}
+              />
+            </div>
+          </ClickSpark>
+        </div>
         <p
           className="mt-6 max-w-[420px] text-[16px] leading-[1.65] text-text-secondary mid:text-[17px]"
           // The line belongs to the option above it, and both change together.

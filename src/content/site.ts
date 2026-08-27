@@ -139,44 +139,59 @@ export const why = {
 export const features = {
   headingA: "מה מחכה",
   headingB: "לכם?",
+  /**
+   * The first three are the bands, illustrated by their demos; the last two
+   * are the cards below them, illustrated by their icon. `icon` exists on all
+   * five so the list stays one shape.
+   */
   items: [
     {
-      cover: 2,
+      icon: "music_note",
       title: "בשבילך",
       body: "מערכת המלצות חכמה שלומדת את הטעם שלך ויוצרת פלייליסטים אישיים שמתאימים בול לכל מצב רוח.",
     },
     {
-      cover: 5,
+      icon: "podcasts",
       title: "יותר ממוזיקה",
       body: "עולם של תוכן עדכני ומסונן בקפידה: סטוריז מאמנים בארץ ובעולם, שיעורי תורה, רדיו חי ופודקאסטים מרתקים.",
     },
     {
-      cover: 8,
-      title: "קהילה ומשחק",
+      icon: "gamepad",
+      title: "Jusic Game",
       body: "חוויה לכל המשפחה עם משחקי טריוויה מוזיקליים, אפשרות לשחק מול יריבים אמיתיים ופתיחת חדרים לקבוצות.",
     },
     {
-      cover: 3,
+      icon: "auto_stories",
       title: "סטוריז",
       body: "סטוריז נבחרים של אמנים מהארץ ומהעולם, מסוננים ומותאמים — רק מה שחשוב ומעניין.",
     },
     {
-      cover: 9,
+      icon: "balance",
       title: "כבוד ליוצרים",
       body: "אנחנו מאמינים בשקיפות מלאה. מודל התגמול שלנו דואג ליוצרים מהשקל הראשון.",
     },
   ],
   /**
-   * Labels for the trivia card that illustrates the third feature. Deliberately
-   * generic: the source design filled it with an invented song and invented
-   * artist names, and this site does not put words in an artist's mouth or
-   * invent a catalogue. Newly written, not from the approved design — see
-   * docs/COPY_SUGGESTIONS.md. Swap in a real question once one is supplied.
+   * The playable trivia round that illustrates Jusic Game. The card began as a
+   * deliberately generic mock — the source design filled it with an invented
+   * song and invented artist names — until the client supplied this round on
+   * 27.8.26: the photo (public/game/quiz-artist.webp), the four names, and
+   * which is right. Real people; do not edit the names or reuse the photo
+   * elsewhere without the client.
+   *
+   * The alt and the answer feedback both name the singer — that is the point —
+   * but nothing before an answer may leak it, the alt included, which is why
+   * the image is aria-hidden and the question carries the accessible label.
    */
   demo: {
     label: "טריוויה מוזיקלית",
-    question: "מי מבצע את השיר שמתנגן עכשיו?",
-    options: ["אפשרות א׳", "אפשרות ב׳", "אפשרות ג׳"],
+    question: "זהה מי הזמר בתמונה",
+    photo: "/game/quiz-artist.webp",
+    options: ["עמירן דביר", "שי וינר", "חיים ציפל", "קובי ברומר"],
+    correct: 3,
+    right: "כל הכבוד!",
+    /** Announced to screen readers on a wrong pick; sighted users get the shake. */
+    wrong: "לא זה. נסו שוב",
   },
 } as const;
 
@@ -240,6 +255,8 @@ export const catalog = {
   ],
   /** Read aloud as the listbox's name; the options are the titles above. */
   wheelLabel: "בחירת סוג תוכן",
+  /** Sits above the wheel, so the names read as choices rather than a list. */
+  wheelHint: "לחצו על סוג תוכן",
   moreLabel: "וגם",
   more: [
     { icon: "music_note", title: "מוזיקה" },

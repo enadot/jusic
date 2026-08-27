@@ -31,9 +31,10 @@ const LENGTH = 10;
 
 export function ClickSpark({
   children,
-  className,
+  className = "inline-flex",
 }: {
   children: ReactNode;
+  /** Must include a display class; defaults to inline-flex. */
   className?: string;
 }) {
   const hostRef = useRef<HTMLSpanElement>(null);
@@ -69,7 +70,10 @@ export function ClickSpark({
     <span
       ref={hostRef}
       onClick={burst}
-      className={cn("relative inline-flex isolate", className)}
+      // Display is the caller's: a default here would fight the layout class
+      // callers pass (block vs inline-flex resolves by stylesheet order, not
+      // by which was written last).
+      className={cn("relative isolate", className)}
     >
       {children}
     </span>
