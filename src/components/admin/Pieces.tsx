@@ -7,31 +7,52 @@ import type {
 } from "@/server/db/schema";
 import {
   formatDate,
-  STATUS_CLASSES,
   STATUS_LABELS,
   TYPE_LABELS,
 } from "@/server/admin-labels";
+import { Badge, type BadgeProps } from "@/components/admin/ui/badge";
+import { Card } from "@/components/admin/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/admin/ui/table";
+
+const STATUS_VARIANTS = new Set<SubmissionStatus>([
+  "new",
+  "in_progress",
+  "done",
+  "spam",
+  "archived",
+]);
+const TYPE_VARIANTS = new Set<SubmissionType>([
+  "bug",
+  "idea",
+  "artist",
+  "copyright",
+]);
 
 export function StatusBadge({ status }: { status: string }) {
   const key = status as SubmissionStatus;
+  const variant: BadgeProps["variant"] = STATUS_VARIANTS.has(key)
+    ? key
+    : "neutral";
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-[12px] font-bold whitespace-nowrap",
-        STATUS_CLASSES[key] ?? STATUS_CLASSES.archived,
-      )}
-    >
+    <Badge variant={variant} dot>
       {STATUS_LABELS[key] ?? status}
-    </span>
+    </Badge>
   );
 }
 
 export function TypeBadge({ type }: { type: string }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-white/[0.04] px-2.5 py-1 text-[12px] font-bold whitespace-nowrap text-text-secondary">
-      {TYPE_LABELS[type as SubmissionType] ?? type}
-    </span>
-  );
+  const key = type as SubmissionType;
+  const variant: BadgeProps["variant"] = TYPE_VARIANTS.has(key)
+    ? key
+    : "neutral";
+  return <Badge variant={variant}>{TYPE_LABELS[key] ?? type}</Badge>;
 }
 
 export function StatTile({
@@ -44,31 +65,36 @@ export function StatTile({
   suffix?: string;
 }) {
   return (
-    <div className="rounded-[14px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5">
-      <p className="m-0 text-[13px] text-text-tertiary">{label}</p>
-      <p className="mt-1.5 mb-0 font-[var(--font-display)] text-[30px] leading-none font-extrabold">
+    <Card className="p-5">
+      <p className="m-0 text-[13px] font-bold text-[var(--text-tertiary)]">
+        {label}
+      </p>
+      <p className="mt-2 mb-0 font-[var(--font-display)] text-[30px] leading-none font-extrabold">
         <bdi>{value}</bdi>
         {suffix ? (
-          <span className="ms-1 text-[17px] text-text-tertiary">{suffix}</span>
+          <span className="ms-1 text-[17px] text-[var(--text-tertiary)]">
+            {suffix}
+          </span>
         ) : null}
       </p>
-    </div>
+    </Card>
   );
 }
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-[14px] border border-dashed border-[var(--border)] px-6 py-14 text-center">
-      <p className="m-0 text-[15px] text-text-tertiary">{message}</p>
+    <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border)] px-6 py-14 text-center">
+      <p className="m-0 text-[15px] text-[var(--text-tertiary)]">{message}</p>
     </div>
   );
 }
 
-const cellClass = "px-4 py-3 text-start align-top";
-
 /**
- * Server-rendered table. Latin values are wrapped in <bdi> so an email or a
- * timestamp cannot reorder the Hebrew around it.
+ * Server-rendered table on the shadcn Table family. The name cell carries the
+ * identity two-line pattern (initial circle, name over email) so the email
+ * column disappears into it — one less column to scan, the layout Deel and
+ * Plain use for people rows. Latin values stay wrapped in <bdi> so an email or
+ * a timestamp cannot reorder the Hebrew around it.
  */
 export function SubmissionsTable({
   rows,
@@ -82,88 +108,69 @@ export function SubmissionsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-[14px] border border-[var(--border-subtle)]">
-      <table className="w-full min-w-[760px] border-collapse text-[14px]">
-        <thead>
-          <tr className="border-b border-[var(--border)] bg-white/[0.02] text-[12px] tracking-[0.04em] text-text-tertiary uppercase">
-            <th scope="col" className={cellClass}>
-              תאריך
-            </th>
-            <th scope="col" className={cellClass}>
-              סוג
-            </th>
-            <th scope="col" className={cellClass}>
-              שם
-            </th>
-            <th scope="col" className={cellClass}>
-              אימייל
-            </th>
-            {showCatalog ? (
-              <th scope="col" className={cellClass}>
-                שם במה
-              </th>
-            ) : (
-              <th scope="col" className={cellClass}>
-                תקציר
-              </th>
-            )}
-            <th scope="col" className={cellClass}>
-              סטטוס
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const payload = (row.payload ?? {}) as Record<string, unknown>;
-            const stageName =
-              typeof payload.stageName === "string" ? payload.stageName : "—";
+    <Table className="min-w-[720px]">
+      <TableHeader>
+        <TableRow className="border-b border-[var(--border-subtle)]">
+          <TableHead>פונה</TableHead>
+          <TableHead>סוג</TableHead>
+          <TableHead>{showCatalog ? "שם במה" : "תקציר"}</TableHead>
+          <TableHead>סטטוס</TableHead>
+          <TableHead>תאריך</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row) => {
+          const payload = (row.payload ?? {}) as Record<string, unknown>;
+          const stageName =
+            typeof payload.stageName === "string" ? payload.stageName : "—";
+          const initial = (row.name.trim()[0] ?? "?").toUpperCase();
 
-            return (
-              <tr
-                key={row.id}
-                className="border-b border-[var(--border-subtle)] last:border-0 hover:bg-white/[0.03]"
-              >
-                <td className={cn(cellClass, "whitespace-nowrap text-text-tertiary")}>
-                  <Link
-                    href={`/admin/submissions/${row.id}`}
-                    className="text-text-secondary hover:text-text-primary"
+          return (
+            <TableRow key={row.id} className="hover:bg-[var(--ad-hover)]">
+              <TableCell>
+                <Link
+                  href={`/admin/submissions/${row.id}`}
+                  className="group flex items-center gap-3"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-input)] text-[13px] font-extrabold text-[var(--text-secondary)]"
                   >
-                    <bdi>{formatDate(row.createdAt)}</bdi>
-                  </Link>
-                </td>
-                <td className={cellClass}>
-                  <TypeBadge type={row.type} />
-                </td>
-                <td className={cn(cellClass, "font-bold")}>
-                  <Link
-                    href={`/admin/submissions/${row.id}`}
-                    className="text-text-primary hover:text-cyan-300"
-                  >
-                    {row.name}
-                  </Link>
-                </td>
-                <td className={cellClass}>
-                  <a
-                    href={`mailto:${row.email}`}
-                    dir="ltr"
-                    className="text-text-secondary hover:text-cyan-300"
-                  >
-                    {row.email}
-                  </a>
-                </td>
-                <td className={cn(cellClass, "max-w-[320px] text-text-secondary")}>
-                  <span className="line-clamp-2">
-                    {showCatalog ? stageName : row.message}
+                    <bdi>{initial}</bdi>
                   </span>
-                </td>
-                <td className={cellClass}>
-                  <StatusBadge status={row.status} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                  <span className="min-w-0">
+                    <span className="block truncate font-bold text-[var(--text-primary)] group-hover:text-[var(--cyan-300)]">
+                      {row.name}
+                    </span>
+                    <span
+                      dir="ltr"
+                      className="block truncate text-[13px] text-[var(--text-tertiary)]"
+                    >
+                      {row.email}
+                    </span>
+                  </span>
+                </Link>
+              </TableCell>
+              <TableCell>
+                <TypeBadge type={row.type} />
+              </TableCell>
+              <TableCell
+                className={cn("max-w-[320px] text-[var(--text-secondary)]")}
+              >
+                <span className="line-clamp-2">
+                  {showCatalog ? stageName : row.message}
+                </span>
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={row.status} />
+              </TableCell>
+              <TableCell className="whitespace-nowrap text-[13px] text-[var(--text-tertiary)]">
+                <bdi>{formatDate(row.createdAt)}</bdi>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }

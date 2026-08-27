@@ -807,3 +807,135 @@ details[open]::details-content {
   }
 }
 
+
+/* --------------------------------------------------------------------------
+   Admin theme scope
+
+   The dashboard is the one surface with a light mode: the public site is
+   dark-only by design, but an internal tool lives in browser tabs next to
+   Gmail and Sheets, and the team asked for the choice. Instead of a parallel
+   token set, the scope REMAPS the design-system variables above — every
+   component that reads --bg / --surface-card / --text-primary /--border flips
+   with it for free. Dark is the default and is exactly the public palette, so
+   the scope adds nothing until [data-admin-theme="light"] appears (set before
+   paint by the inline script in src/app/admin/layout.tsx, persisted in
+   localStorage).
+
+   Cyan text tones are remapped too: #5ac8e8 on white is unreadable, so in
+   light mode cyan-300/400 resolve to ink-heavy cyans that clear 4.5:1.
+   -------------------------------------------------------------------------- */
+.admin-root {
+  color-scheme: dark;
+  background: var(--bg);
+  color: var(--text-primary);
+
+  /* hover wash over cards/rows: white in dark mode, ink in light. */
+  --ad-hover: rgb(255 255 255 / 0.05);
+  --ad-hover-strong: rgb(255 255 255 / 0.08);
+  --ad-thead: rgb(255 255 255 / 0.02);
+  --ad-code-bg: rgb(0 0 0 / 0.3);
+
+  /* Submission-type chips — the four inquiry types, each its own hue so a
+     scanning eye sorts the inbox without reading. Values are per-theme. */
+  --chip-bug-fg: #f0837c;
+  --chip-bug-bg: rgb(226 86 78 / 0.13);
+  --chip-bug-bd: rgb(226 86 78 / 0.38);
+  --chip-idea-fg: #ecc056;
+  --chip-idea-bg: rgb(232 178 58 / 0.13);
+  --chip-idea-bd: rgb(232 178 58 / 0.38);
+  --chip-artist-fg: #bda5f2;
+  --chip-artist-bg: rgb(146 108 233 / 0.14);
+  --chip-artist-bd: rgb(146 108 233 / 0.4);
+  --chip-copyright-fg: #82b9f0;
+  --chip-copyright-bg: rgb(66 133 244 / 0.14);
+  --chip-copyright-bd: rgb(66 133 244 / 0.4);
+
+  /* Status chips reuse the semantic colours, themed the same way. */
+  --chip-new-fg: var(--cyan-300);
+  --chip-new-bg: rgb(30 176 213 / 0.12);
+  --chip-new-bd: rgb(30 176 213 / 0.4);
+  --chip-progress-fg: var(--color-warning);
+  --chip-progress-bg: rgb(232 178 58 / 0.12);
+  --chip-progress-bd: rgb(232 178 58 / 0.4);
+  --chip-done-fg: var(--color-success);
+  --chip-done-bg: rgb(63 185 132 / 0.12);
+  --chip-done-bd: rgb(63 185 132 / 0.4);
+  --chip-spam-fg: var(--color-error);
+  --chip-spam-bg: rgb(226 86 78 / 0.12);
+  --chip-spam-bd: rgb(226 86 78 / 0.4);
+  --chip-muted-fg: var(--text-tertiary);
+  --chip-muted-bg: rgb(255 255 255 / 0.04);
+  --chip-muted-bd: var(--border);
+}
+
+.admin-root[data-admin-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f6f6;
+  --bg-elevated: #ffffff;
+  --surface-card: #ffffff;
+  --surface-input: #eef1f1;
+  --ink-950: #eaeeed; /* the sidebar */
+  --ink-500: #d3dad8;
+
+  --border: #d3dad8;
+  --border-subtle: rgb(15 20 23 / 0.09);
+
+  --text-primary: #10181b;
+  --text-secondary: #44534e;
+  --text-tertiary: #64736d;
+  --text-disabled: #93a19b;
+
+  /* cyan as TEXT needs ink in light mode; cyan as FILL stays the brand cyan
+     (buttons keep --cyan-500 + --text-on-cyan, which passes on both themes). */
+  --cyan-300: #0b7d9e;
+  --cyan-400: #0e6f8c;
+
+  --color-success: #1e7f56;
+  --color-warning: #8a6414;
+  --color-error: #b3362e;
+
+  --shadow-card: 0 1px 2px rgb(15 20 23 / 0.06);
+
+  --ad-hover: rgb(15 20 23 / 0.045);
+  --ad-hover-strong: rgb(15 20 23 / 0.07);
+  --ad-thead: rgb(15 20 23 / 0.025);
+  --ad-code-bg: rgb(15 20 23 / 0.06);
+
+  --chip-bug-fg: #a82f27;
+  --chip-bug-bg: #fdecea;
+  --chip-bug-bd: #f3beba;
+  --chip-idea-fg: #7a570b;
+  --chip-idea-bg: #fdf3d7;
+  --chip-idea-bd: #ecd79a;
+  --chip-artist-fg: #5f3dcb;
+  --chip-artist-bg: #efeafd;
+  --chip-artist-bd: #d4c6f6;
+  --chip-copyright-fg: #17569e;
+  --chip-copyright-bg: #e7f0fc;
+  --chip-copyright-bd: #bdd6f4;
+
+  --chip-new-fg: #0b6f8d;
+  --chip-new-bg: #e2f4fa;
+  --chip-new-bd: #a8dcec;
+  --chip-progress-fg: #7a570b;
+  --chip-progress-bg: #fdf3d7;
+  --chip-progress-bd: #ecd79a;
+  --chip-done-fg: #16693f;
+  --chip-done-bg: #e4f5ec;
+  --chip-done-bd: #aedec5;
+  --chip-spam-fg: #a82f27;
+  --chip-spam-bg: #fdecea;
+  --chip-spam-bd: #f3beba;
+  --chip-muted-fg: #64736d;
+  --chip-muted-bg: rgb(15 20 23 / 0.05);
+  --chip-muted-bd: #d3dad8;
+}
+
+/* The theme toggle shows the icon of the mode you would switch TO — sun while
+   dark, moon while light — driven by the attribute rather than React state so
+   there is no first-paint flash. */
+.admin-root .admin-icon-sun { display: inline; }
+.admin-root .admin-icon-moon { display: none; }
+.admin-root[data-admin-theme="light"] .admin-icon-sun { display: none; }
+.admin-root[data-admin-theme="light"] .admin-icon-moon { display: inline; }

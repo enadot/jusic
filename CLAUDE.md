@@ -106,7 +106,9 @@ Ported from the Claude Design project `jusic-design-system-bd48b83e`. The rules
 that matter:
 
 - **Dark only.** `#0F1417` background. Cyan looks weak on white; there is no
-  light theme.
+  light theme. The one exception is `/admin`: an internal tool, scoped under
+  `.admin-root` in `globals.css`, which remaps the design-system variables and
+  offers a light mode. Nothing about it leaks to the public site.
 - **Artwork is the colour.** The frame is near-black and low-chroma so covers
   can be loud. Never colour-grade or tint artwork.
 - **One accent.** Cyan `#1EB0D5` is action; sage `#778A84` is structure. No

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { buttonClass } from "@/components/ui/Button";
-import { FormError } from "@/components/ui/Field";
+import { buttonVariants } from "@/components/admin/ui/button";
+import { Alert } from "@/components/admin/ui/field";
 import { Icon } from "@/components/ui/Icon";
 import { authClient } from "@/lib/auth-client";
 
@@ -69,12 +69,12 @@ export function GoogleButton() {
 
   return (
     <div className="flex flex-col gap-4">
-      {error ? <FormError>{error}</FormError> : null}
+      {error ? <Alert>{error}</Alert> : null}
       <button
         type="button"
         onClick={signInWithGoogle}
         disabled={pending}
-        className={buttonClass({ variant: "outline", size: "lg", block: true })}
+        className={buttonVariants({ variant: "outline", size: "lg", block: true })}
       >
         <Icon name="google" size={18} />
         <span>
