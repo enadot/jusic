@@ -91,3 +91,45 @@ export const adminAllowlistSchema = z.object({
     .transform((value) => value.toLowerCase()),
   note: trimmed(120).optional(),
 });
+
+/**
+ * A webhook destination, typed into /admin/webhooks by an admin.
+ *
+ * The host rules are an SSRF guard, not pedantry: this URL is fetched by the
+ * server, from inside the deployment's network, so an address typed into a
+ * browser form would otherwise be able to reach the cloud metadata endpoint or
+ * anything else the function can see. https only (the payload carries a name,
+ * an email and a phone number), and no loopback, link-local or private-range
+ * host. It cannot stop a public hostname that resolves to a private address —
+ * that needs resolution-time checking, which fetch does not expose — so this is
+ * the cheap 95%, and the screen is behind requireAdmin() for the rest.
+ */
+const BLOCKED_HOSTS =
+  /^(localhost|.*\.local|.*\.internal|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|\[?::1\]?$|\[?f[cd])/i;
+
+function parsedUrl(value: string): URL | undefined {
+  try {
+    return new URL(value);
+  } catch {
+    return undefined;
+  }
+}
+
+export const webhookSchema = z.object({
+  url: trimmed(500)
+    .min(1, "נא למלא כתובת webhook")
+    .pipe(z.url("הכתובת אינה תקינה"))
+    // Both refinements pass an unparseable string through: z.url() above has
+    // already rejected it, and its message is the accurate one. Returning
+    // false here too would let "not-a-url" be reported as a private address.
+    .refine((value) => {
+      const parsed = parsedUrl(value);
+      return parsed === undefined || parsed.protocol === "https:";
+    }, "הכתובת חייבת להיות https")
+    .refine((value) => {
+      const host = parsedUrl(value)?.hostname;
+      return host === undefined || !BLOCKED_HOSTS.test(host);
+    }, "אי אפשר לשלוח לכתובת פנימית או מקומית"),
+  description: trimmed(120).optional(),
+  secret: trimmed(200).optional(),
+});

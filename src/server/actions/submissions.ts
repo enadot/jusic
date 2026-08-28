@@ -6,7 +6,7 @@ import { getDb } from "../db";
 import { submissions, type NewSubmission } from "../db/schema";
 import { artistSchema, contactSchema, fieldErrors } from "../validation";
 import { checkSubmission, hashIp } from "../spam";
-import { notifyMake } from "../webhook";
+import { notifySubmission } from "../webhook";
 import type { FormState } from "@/lib/formState";
 import { site } from "@/content/site";
 
@@ -105,9 +105,10 @@ async function persist(
     return { status: "error", message: GENERIC_ERROR, values: echo(formData) };
   }
 
-  // after() runs once the response is already on its way, so a slow Make
-  // scenario never shows up as latency on the submit button.
-  after(() => notifyMake(inserted, site.url));
+  // after() runs once the response is already on its way, so a slow endpoint —
+  // the Make scenario or any destination added from /admin/webhooks — never
+  // shows up as latency on the submit button.
+  after(() => notifySubmission(inserted, site.url));
 
   return { status: "success" };
 }

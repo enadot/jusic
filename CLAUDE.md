@@ -15,7 +15,7 @@ belong to the product?* If it belongs to the product, do not build it here.
 | Styling | Tailwind CSS v4, CSS-first `@theme` in `src/styles/globals.css` |
 | Icons | `lucide-react` |
 | Content | `src/content/site.ts` (typed module; Sanity is a later milestone) |
-| Data | Neon Postgres + Drizzle — contact form submissions and the admin allowlist |
+| Data | Neon Postgres + Drizzle — submissions, the admin allowlist, webhook destinations |
 | Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + a two-half allowlist |
 | Validation | `zod`, server-side only |
 | Motion | CSS + `IntersectionObserver` everywhere; `gsap` + `ogl` on the home page only |
@@ -64,6 +64,15 @@ revoke a root address, and a database outage narrows access to the root list
 rather than opening the inbox or sealing the dashboard whose own error panel
 explains the outage. **Keep at least one address in `ADMIN_EMAILS`** — it is
 the way back in when the table is empty or unreachable.
+
+**A webhook URL is typed into a browser form and then fetched by the server**,
+which is an SSRF hole unless it is guarded. `webhookSchema` in
+`src/server/validation.ts` requires https and rejects loopback, link-local and
+private-range hosts before a row is written — without it, `/admin/webhooks`
+would reach the cloud metadata endpoint and anything else the function can see.
+It cannot catch a public hostname that resolves to a private address; that
+needs resolution-time checking, which `fetch` does not expose. Do not relax it
+to "make a test endpoint work".
 
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.

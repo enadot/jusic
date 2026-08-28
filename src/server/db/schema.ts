@@ -1,5 +1,7 @@
 import {
+  boolean,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -112,3 +114,44 @@ export const adminAllowlist = pgTable(
 );
 
 export type AdminAllowlistRow = typeof adminAllowlist.$inferSelect;
+
+/**
+ * Extra destinations every new submission is POSTed to, managed from
+ * /admin/webhooks.
+ *
+ * MAKE_WEBHOOK_URL keeps working exactly as before and is not a row here — it
+ * is the env-configured destination that predates this table, and the same
+ * argument as the admin allowlist applies: an integration that must survive an
+ * empty or unreachable table belongs in the environment. Rows are everything
+ * added since, without a redeploy.
+ *
+ * The last attempt is recorded on the row itself rather than in a delivery log:
+ * the question the dashboard actually has to answer is "is this endpoint
+ * working right now", and one row per destination answers it without a table
+ * that grows with every submission.
+ */
+export const webhooks = pgTable("webhooks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+
+  url: text("url").notNull(),
+  /** What this endpoint is, so a stale row can be recognised. */
+  description: text("description"),
+  /**
+   * Optional HMAC-SHA256 key. When set, the POST carries the body signature in
+   * x-jusic-signature, exactly as the Make integration does.
+   */
+  secret: text("secret"),
+  enabled: boolean("enabled").notNull().default(true),
+
+  /** HTTP status of the last attempt, or null if it never got a response. */
+  lastStatus: integer("last_status"),
+  lastError: text("last_error"),
+  lastAttemptAt: timestamp("last_attempt_at", { withTimezone: true }),
+
+  createdBy: text("created_by"),
+});
+
+export type Webhook = typeof webhooks.$inferSelect;

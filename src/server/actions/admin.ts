@@ -10,6 +10,7 @@ import {
   adminAllowlist,
   submissions,
   SUBMISSION_STATUSES,
+  webhooks,
 } from "../db/schema";
 import {
   envAdminEmails,
@@ -20,7 +21,9 @@ import {
   RESET_PASSWORD_PATH,
   SIGN_IN_PATH,
 } from "../auth";
-import { adminAllowlistSchema } from "../validation";
+import { adminAllowlistSchema, webhookSchema } from "../validation";
+import { deliver, recordAttempt, submissionPayload } from "../webhook";
+import { site } from "@/content/site";
 
 function isStatus(value: unknown): value is (typeof SUBMISSION_STATUSES)[number] {
   return (
@@ -388,4 +391,138 @@ export async function removeAdmin(formData: FormData): Promise<void> {
   await getDb().delete(adminAllowlist).where(eq(adminAllowlist.id, id));
 
   revalidatePath("/admin/team");
+}
+
+/* --------------------------------------------------------------------------
+   Webhook destinations — the /admin/webhooks screen
+
+   Every new submission is POSTed to each enabled row (see notifySubmission in
+   src/server/webhook.ts). The URL is typed into a browser form and fetched by
+   the server, so webhookSchema rejects http and private hosts before a row is
+   ever written — see the SSRF note there.
+   -------------------------------------------------------------------------- */
+
+export type WebhookState = {
+  error?: string;
+  added?: string;
+  tested?: string;
+  values?: { url?: string; description?: string; secret?: string };
+};
+
+export async function addWebhook(
+  _prev: WebhookState,
+  formData: FormData,
+): Promise<WebhookState> {
+  const admin = await requireAdmin();
+
+  const values = {
+    url: String(formData.get("url") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    secret: String(formData.get("secret") ?? ""),
+  };
+
+  const parsed = webhookSchema.safeParse(values);
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "הפרטים אינם תקינים.",
+      values,
+    };
+  }
+
+  try {
+    await getDb().insert(webhooks).values({
+      url: parsed.data.url,
+      description: parsed.data.description || null,
+      secret: parsed.data.secret || null,
+      createdBy: admin.email,
+    });
+  } catch (caught) {
+    console.error("[addWebhook]", caught);
+    return { error: "ההוספה נכשלה. נסו שוב.", values };
+  }
+
+  revalidatePath("/admin/webhooks");
+  return { added: parsed.data.url };
+}
+
+export async function removeWebhook(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await getDb().delete(webhooks).where(eq(webhooks.id, id));
+  revalidatePath("/admin/webhooks");
+}
+
+/** Pause a destination without losing its URL and secret. */
+export async function toggleWebhook(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const [row] = await getDb()
+    .select({ enabled: webhooks.enabled })
+    .from(webhooks)
+    .where(eq(webhooks.id, id))
+    .limit(1);
+  if (!row) return;
+
+  await getDb()
+    .update(webhooks)
+    .set({ enabled: !row.enabled })
+    .where(eq(webhooks.id, id));
+  revalidatePath("/admin/webhooks");
+}
+
+/**
+ * Sends one sample payload, so a scenario can be wired up and confirmed before
+ * a real visitor's message is the thing being debugged.
+ *
+ * The sample has the exact shape of a real delivery, with `test: true` added
+ * and obviously fake contact details — never a real submission, which would
+ * hand someone else's phone number to an endpoint that is not yet trusted.
+ * The result is stamped on the row like any other attempt.
+ */
+export async function testWebhook(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const [row] = await getDb()
+    .select()
+    .from(webhooks)
+    .where(eq(webhooks.id, id))
+    .limit(1);
+  if (!row) return;
+
+  const sample = {
+    ...submissionPayload(
+      {
+        id: "00000000-0000-0000-0000-000000000000",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        type: "bug",
+        status: "new",
+        name: "בדיקה",
+        email: "test@example.com",
+        phone: null,
+        message: "זו פנייה לדוגמה שנשלחה מלוח הבקרה כדי לבדוק את החיבור.",
+        payload: null,
+        utm: null,
+        placement: "footer",
+        pagePath: "/",
+        userAgent: null,
+        ipHash: null,
+        adminNotes: null,
+        handledBy: null,
+        handledAt: null,
+      },
+      site.url,
+    ),
+    test: true,
+  };
+
+  const result = await deliver(row.url, JSON.stringify(sample), row.secret);
+  await recordAttempt(row.id, result);
+  revalidatePath("/admin/webhooks");
 }

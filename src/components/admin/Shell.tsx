@@ -1,6 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { LayoutDashboard, Inbox, Mic, Users, LogOut, ExternalLink } from "lucide-react";
+import {
+  LayoutDashboard,
+  Inbox,
+  Mic,
+  Users,
+  Webhook,
+  LogOut,
+  ExternalLink,
+} from "lucide-react";
 import { cn } from "@/lib/cn";
 import { signOut } from "@/server/actions/admin";
 import type { AdminUser } from "@/server/auth";
@@ -13,6 +21,7 @@ const NAV = [
   { href: "/admin/submissions", label: "כל הפניות", icon: Inbox },
   { href: "/admin/artists", label: "הצטרפות אמנים", icon: Mic },
   { href: "/admin/team", label: "ניהול גישה", icon: Users },
+  { href: "/admin/webhooks", label: "Webhooks", icon: Webhook },
 ] as const;
 
 /**
