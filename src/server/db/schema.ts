@@ -1,9 +1,12 @@
 import {
+  boolean,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -80,3 +83,75 @@ export const SUBMISSION_STATUSES = [
   "archived",
 ] as const;
 export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number];
+
+/**
+ * Who may open the dashboard, beyond the ADMIN_EMAILS env allowlist.
+ *
+ * ADMIN_EMAILS stays the root list: it needs no database, it cannot be edited
+ * from the browser, and it is what gets the first person in — and back in if
+ * this table is ever emptied or unreachable. Rows here are the teammates added
+ * afterwards from /admin/team, which is the whole point: a new colleague is a
+ * click, not an environment variable and a redeploy.
+ *
+ * `email` is stored already lowercased (the action does it) and carries a
+ * unique index, so "A@x.com" cannot be added twice under different casing.
+ */
+export const adminAllowlist = pgTable(
+  "admin_allowlist",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+
+    email: text("email").notNull(),
+    /** Free-text label — a name or a role, so a stale row can be recognised. */
+    note: text("note"),
+    /** Email of the admin who added this row. */
+    addedBy: text("added_by"),
+  },
+  (table) => [uniqueIndex("admin_allowlist_email_idx").on(table.email)],
+);
+
+export type AdminAllowlistRow = typeof adminAllowlist.$inferSelect;
+
+/**
+ * Extra destinations every new submission is POSTed to, managed from
+ * /admin/webhooks.
+ *
+ * MAKE_WEBHOOK_URL keeps working exactly as before and is not a row here — it
+ * is the env-configured destination that predates this table, and the same
+ * argument as the admin allowlist applies: an integration that must survive an
+ * empty or unreachable table belongs in the environment. Rows are everything
+ * added since, without a redeploy.
+ *
+ * The last attempt is recorded on the row itself rather than in a delivery log:
+ * the question the dashboard actually has to answer is "is this endpoint
+ * working right now", and one row per destination answers it without a table
+ * that grows with every submission.
+ */
+export const webhooks = pgTable("webhooks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+
+  url: text("url").notNull(),
+  /** What this endpoint is, so a stale row can be recognised. */
+  description: text("description"),
+  /**
+   * Optional HMAC-SHA256 key. When set, the POST carries the body signature in
+   * x-jusic-signature, exactly as the Make integration does.
+   */
+  secret: text("secret"),
+  enabled: boolean("enabled").notNull().default(true),
+
+  /** HTTP status of the last attempt, or null if it never got a response. */
+  lastStatus: integer("last_status"),
+  lastError: text("last_error"),
+  lastAttemptAt: timestamp("last_attempt_at", { withTimezone: true }),
+
+  createdBy: text("created_by"),
+});
+
+export type Webhook = typeof webhooks.$inferSelect;

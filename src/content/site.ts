@@ -139,44 +139,168 @@ export const why = {
 export const features = {
   headingA: "מה מחכה",
   headingB: "לכם?",
+  /**
+   * The first three are the bands, illustrated by their demos; the last two
+   * are the cards below them, illustrated by their icon. `icon` exists on all
+   * five so the list stays one shape.
+   */
   items: [
     {
-      cover: 2,
+      icon: "music_note",
       title: "בשבילך",
       body: "מערכת המלצות חכמה שלומדת את הטעם שלך ויוצרת פלייליסטים אישיים שמתאימים בול לכל מצב רוח.",
     },
     {
-      cover: 5,
+      icon: "podcasts",
       title: "יותר ממוזיקה",
       body: "עולם של תוכן עדכני ומסונן בקפידה: סטוריז מאמנים בארץ ובעולם, שיעורי תורה, רדיו חי ופודקאסטים מרתקים.",
     },
     {
-      cover: 8,
-      title: "קהילה ומשחק",
+      icon: "gamepad",
+      title: "Jusic Game",
       body: "חוויה לכל המשפחה עם משחקי טריוויה מוזיקליים, אפשרות לשחק מול יריבים אמיתיים ופתיחת חדרים לקבוצות.",
     },
     {
-      cover: 3,
+      icon: "auto_stories",
       title: "סטוריז",
       body: "סטוריז נבחרים של אמנים מהארץ ומהעולם, מסוננים ומותאמים — רק מה שחשוב ומעניין.",
     },
     {
-      cover: 9,
+      icon: "balance",
       title: "כבוד ליוצרים",
       body: "אנחנו מאמינים בשקיפות מלאה. מודל התגמול שלנו דואג ליוצרים מהשקל הראשון.",
     },
   ],
   /**
-   * Labels for the trivia card that illustrates the third feature. Deliberately
-   * generic: the source design filled it with an invented song and invented
-   * artist names, and this site does not put words in an artist's mouth or
-   * invent a catalogue. Newly written, not from the approved design — see
-   * docs/COPY_SUGGESTIONS.md. Swap in a real question once one is supplied.
+   * The playable trivia round that illustrates Jusic Game. The card began as a
+   * deliberately generic mock — the source design filled it with an invented
+   * song and invented artist names — until the client supplied this round on
+   * 27.8.26: the photo (public/game/quiz-artist.webp), the four names, and
+   * which is right. Real people; do not edit the names or reuse the photo
+   * elsewhere without the client.
+   *
+   * The alt and the answer feedback both name the singer — that is the point —
+   * but nothing before an answer may leak it, the alt included, which is why
+   * the image is aria-hidden and the question carries the accessible label.
    */
   demo: {
     label: "טריוויה מוזיקלית",
-    question: "מי מבצע את השיר שמתנגן עכשיו?",
-    options: ["אפשרות א׳", "אפשרות ב׳", "אפשרות ג׳"],
+    question: "זהה מי הזמר בתמונה",
+    photo: "/game/quiz-artist.webp",
+    options: ["עמירן דביר", "שי וינר", "חיים ציפל", "קובי ברומר"],
+    correct: 3,
+    right: "כל הכבוד!",
+    /** Announced to screen readers on a wrong pick; sighted users get the shake. */
+    wrong: "לא זה. נסו שוב",
+  },
+} as const;
+
+/**
+ * The catalogue band: every kind of content in the app, each with a stage of
+ * its own rather than a word inside a run-on sentence.
+ *
+ * Two tiers, and the split is editorial rather than decorative. `showcase`
+ * holds the four the site had never actually shown — playlists, lessons and
+ * talks, clips, radio — each with a real screen from the app behind it, so
+ * they are proved rather than asserted. `more` holds the four that already own
+ * a stage further up the page (music in the hero, stories in the Stories band,
+ * trivia in the game band) plus podcasts, which needs a name more than a
+ * picture. Move an item between the tiers when that stops being true.
+ *
+ * Newly written — the approved design has no such section — but deliberately
+ * not new *claims*: the lines are the approved wording for that content type,
+ * moved out of the sentences it was buried in (`hero.body`, `features.items`,
+ * `faq.items[content-types]`, `why.body`). The two exceptions are `clips` and
+ * the talks half of "שיעורים והרצאות": neither appears anywhere in the approved
+ * copy, and both are here because the client said the app has them — and then
+ * sent the screens that show them. See docs/COPY_SUGGESTIONS.md.
+ *
+ * Nothing here counts anything. No song totals, no station totals, no artist
+ * totals — the moment one of these lines grows a number it is a claim nobody
+ * has approved.
+ */
+export const catalog = {
+  headingA: "הכול",
+  headingB: "במקום אחד.",
+  body: "ג׳וזיק היא לא רק מוזיקה. זה כל התוכן היהודי שאתם מאזינים לו ביום־יום, תחת אפליקציה אחת נקייה ומסוננת.",
+  showcase: [
+    {
+      icon: "queue_music",
+      title: "פלייליסטים",
+      body: "פלייליסטים אישיים שנבנים לפי הטעם שלכם, לצד פלייליסטים מוכנים לכל מצב רוח ולכל תקופה בשנה.",
+      shot: "/app/playlists.webp",
+      alt: "מסך הפלייליסטים באפליקציית ג׳וזיק",
+    },
+    {
+      icon: "school",
+      title: "שיעורים והרצאות",
+      body: "שיעורי תורה והרצאות מרבנים ומרצים, להאזנה בכל זמן ובכל מקום.",
+      shot: "/app/lessons.webp",
+      alt: "מסך השיעורים באפליקציית ג׳וזיק",
+    },
+    {
+      icon: "movie",
+      title: "קליפים",
+      body: "קליפים מצולמים של אמנים, בתוך אותה סביבה מסוננת.",
+      shot: "/app/clips.webp",
+      alt: "מסך הקליפים החדשים באפליקציית ג׳וזיק",
+    },
+    {
+      icon: "radio",
+      title: "רדיו חי",
+      body: "תחנות רדיו בשידור חי, בלחיצה אחת.",
+      shot: "/app/radio.webp",
+      alt: "מסך תחנות הרדיו באפליקציית ג׳וזיק",
+    },
+  ],
+  /** Read aloud as the listbox's name; the options are the titles above. */
+  wheelLabel: "בחירת סוג תוכן",
+  /** Sits above the wheel, so the names read as choices rather than a list. */
+  wheelHint: "לחצו על סוג תוכן",
+  moreLabel: "וגם",
+  more: [
+    { icon: "music_note", title: "מוזיקה" },
+    { icon: "auto_stories", title: "סטוריז" },
+    { icon: "podcasts", title: "פודקאסטים" },
+    { icon: "gamepad", title: "טריוויה" },
+  ],
+} as const;
+
+/**
+ * The five artist stories behind the Stories band, in the order the client
+ * listed them (their source files were `01_Moshe_Klein`, `05_Simcha_Friedman`,
+ * `02_Nehorai_Arieli`, `03_Moshe_Klein`, `04_Aviaad_Deraf`). Every poster is a
+ * frame lifted out of its own clip, so a ring always shows what the story
+ * opens on and the `poster` attribute matches the first thing that plays.
+ *
+ * The rings carry no artist names on purpose. These are real people, and the
+ * clips arrived with transliterated filenames; this site does not guess at the
+ * Hebrew spelling of someone's name. Add a `name` per item once the client
+ * supplies the spellings, and the ring will have somewhere to put it.
+ */
+export const stories = {
+  items: [
+    { src: "/stories/story-1.webm", poster: "/stories/story-1.webp" },
+    { src: "/stories/story-2.webm", poster: "/stories/story-2.webp" },
+    { src: "/stories/story-3.webm", poster: "/stories/story-3.webp" },
+    { src: "/stories/story-4.webm", poster: "/stories/story-4.webp" },
+    { src: "/stories/story-5.webm", poster: "/stories/story-5.webp" },
+  ],
+  /**
+   * Viewer controls. Newly written rather than taken from the approved design,
+   * which has no stories viewer in it — see docs/COPY_SUGGESTIONS.md.
+   */
+  ui: {
+    /** `${open} ${n} מתוך ${total}` — the ring is an icon-only control. */
+    open: "פתיחת סטורי",
+    dialog: "סטוריז של אמנים",
+    close: "סגירה",
+    next: "הסטורי הבא",
+    prev: "הסטורי הקודם",
+    pause: "השהיה",
+    play: "המשך",
+    mute: "השתקה",
+    unmute: "הפעלת קול",
   },
 } as const;
 
@@ -432,6 +556,15 @@ export const copyrightLine = `כל הזכויות שמורות לג׳וזיק ($
 /** Public path for a mockup cover tile. */
 export const cover = (n: number) =>
   `/covers/cover-${String(n).padStart(2, "0")}.jpg`;
+
+/**
+ * Artist photography supplied by the client for the "בשבילך" band only. Kept
+ * apart from `cover()` on purpose: those tiles are generic mockup artwork and
+ * are reused across several sections, while these are specific images the
+ * client picked for the recommendations grid. Six files, `reco-01`…`reco-06`.
+ */
+export const recoTile = (n: number) =>
+  `/reco/reco-${String(n).padStart(2, "0")}.jpg`;
 
 /* ---------------------------------------------------------------------------
    /download — the dedicated install page

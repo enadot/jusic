@@ -73,6 +73,11 @@
      between Tailwind's md (768) and lg (1024). `mid:` is that breakpoint. It
      has to stay in step with the gutter override at the bottom of this file. */
   --breakpoint-mid: 861px;
+  /* It is in px, and Tailwind's own sm/md/lg are in rem. Tailwind cannot order
+     media queries across the two units, so it emits `mid` before all of them:
+     mixing `sm:` with `mid:` on the same property lets the sm rule win at every
+     width above 861px. Pair `mid:` with px variants (`min-[560px]:`) or with
+     nothing — never with sm/md/lg. */
 }
 
 /* --------------------------------------------------------------------------
@@ -262,6 +267,179 @@ a:hover {
 }
 
 /* --------------------------------------------------------------------------
+   Option wheel — see components/ui/OptionWheel.tsx
+   -------------------------------------------------------------------------- */
+
+.ow {
+  position: relative;
+  user-select: none;
+  outline: none;
+}
+
+/* Before the layout effect runs — and if JavaScript never arrives — the
+   options are an ordinary column. Only `data-wheel="on"` lifts them onto the
+   curve, so a crawler and a no-JS visitor read a plain list. */
+.ow__item {
+  display: block;
+  width: 100%;
+  padding: 0.15em 0;
+  border: 0;
+  background: none;
+  text-align: start;
+  white-space: nowrap;
+  font-size: var(--ow-font-size);
+  line-height: 1.1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  /* --ow-p runs 0 → 1 as an option reaches the middle of the wheel. */
+  color: color-mix(
+    in srgb,
+    var(--text-primary) calc(var(--ow-p, 0) * 100%),
+    var(--text-tertiary)
+  );
+}
+
+.ow[data-wheel="on"] {
+  overflow: hidden;
+}
+
+.ow[data-wheel="on"] .ow__item {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: var(--ow-inset);
+  width: auto;
+  padding: 0;
+  /* Physical, and deliberately so: the wheel hangs off the start edge, which
+     in this RTL-only site is the right one. */
+  transform-origin: right center;
+  will-change: transform, opacity, filter;
+}
+
+/* Unpicked options answer the pointer, which is most of what "clickable"
+   looks like on a text control. */
+.ow[data-wheel="on"] .ow__item:not(.ow__item--on):hover {
+  color: var(--text-primary);
+}
+
+.ow__item--on {
+  font-weight: 700;
+}
+
+.ow__item:focus-visible {
+  outline: 2px solid var(--cyan-400);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Glare — a light sweep across a surface on hover.
+
+   Adapted from React Bits' `GlareHover`, which wraps its content in a React
+   component that only ever sets CSS variables. There is nothing for JavaScript
+   to do here, so it is a class: any surface can opt in, at no cost to any
+   bundle. The global reduced-motion rule above collapses the transition, so
+   the sweep disappears for a visitor who asked for less motion.
+   -------------------------------------------------------------------------- */
+
+.glare {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glare::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    -30deg,
+    transparent 58%,
+    rgb(255 255 255 / 0.06) 68%,
+    rgb(255 255 255 / 0.14) 72%,
+    transparent 82%,
+    transparent 100%
+  );
+  background-size: 260% 260%;
+  background-repeat: no-repeat;
+  background-position: 120% 120%;
+  transition: background-position var(--dur-reveal) var(--ease-standard);
+}
+
+.glare:hover::after,
+.glare:focus-within::after {
+  background-position: -40% -40%;
+}
+
+/* --------------------------------------------------------------------------
+   Click spark — see components/ui/ClickSpark.tsx
+   -------------------------------------------------------------------------- */
+
+.spark {
+  position: absolute;
+  top: var(--spark-y);
+  inset-inline-start: var(--spark-x);
+  width: var(--spark-len);
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  rotate: var(--spark-angle);
+  animation: spark-out var(--dur-base) var(--ease-out) forwards;
+}
+
+@keyframes spark-out {
+  from {
+    translate: var(--spark-near) 0;
+    opacity: 0.9;
+  }
+  to {
+    translate: var(--spark-far) 0;
+    opacity: 0;
+    scale: 0.2 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Trivia demo — see components/sections/TriviaGame.tsx.
+   Both animations collapse under the global reduced-motion rule; colour and
+   the live region carry the feedback there.
+   -------------------------------------------------------------------------- */
+
+.quiz-shake {
+  animation: quiz-shake 320ms var(--ease-standard);
+}
+
+@keyframes quiz-shake {
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.quiz-pop {
+  animation: quiz-pop var(--dur-base) var(--ease-out);
+}
+
+@keyframes quiz-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Skip link
    -------------------------------------------------------------------------- */
 .skip-link {
@@ -320,7 +498,41 @@ a:hover {
     width: auto;
   }
   .dlg[open] {
-    animation: dlg-card var(--dur-base) var(--ease-out);
+    animation: dlg-card var(--dur-sheet) var(--ease-out);
+  }
+}
+
+/*
+ * The stories viewer. Same backdrop and the same reduced-motion kill switch as
+ * `.dlg`, but the panel is a full-height 9:16 stage rather than a sheet, so it
+ * fills the viewport instead of rising from its edge.
+ */
+.story-dlg {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: auto;
+}
+
+.story-dlg::backdrop {
+  background: rgb(8 11 13 / 0.9);
+  backdrop-filter: blur(var(--blur-glass));
+  animation: dlg-fade var(--dur-base) var(--ease-standard);
+}
+
+.story-dlg[open] {
+  animation: dlg-fade var(--dur-base) var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-dlg[open],
+  .story-dlg::backdrop {
+    animation: none;
   }
 }
 
@@ -330,16 +542,20 @@ a:hover {
   }
 }
 
+/* The sheet enters from the viewport edge it is pinned to — real travel, not a
+   hint of it. No opacity: a surface sliding in from off-screen has nothing to
+   fade from. */
 @keyframes dlg-rise {
   from {
-    transform: translateY(24px);
-    opacity: 0;
+    transform: translateY(100%);
   }
 }
 
+/* The centred card settles into place: enough travel and scale to read as an
+   entrance, --ease-out so it lands softly. No bounce — the system bans it. */
 @keyframes dlg-card {
   from {
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(24px) scale(0.95);
     opacity: 0;
   }
 }
@@ -356,6 +572,232 @@ a:hover {
 body:has(dialog[open]) {
   overflow: hidden;
 }
+
+/* --------------------------------------------------------------------------
+   Motion layer — from-states for GSAP, the Hero line masks and the Why wipe
+
+   Everything here is inert unless <html> carries `js-anim`, which the inline
+   guard in app/page.tsx adds only when JS is running and reduced motion is off,
+   and removes again after 2.5s if the GSAP chunk never arrives. No class → no
+   from-state → the page is simply its finished frame.
+   -------------------------------------------------------------------------- */
+
+/* From-states. Hidden only while the guard class is present.
+   `data-anim`       — one element GSAP tweens in.
+   `data-anim-group` — its direct children, tweened as a stagger.
+   `data-anim-lines` — a heading pre-split into .line-mask rows, revealed on
+                       scroll (as opposed to the Hero's load-time CSS reveal).
+   `data-anim-step`  — one item in a section that reveals as a block.
+   `data-anim-card`  — a card picked up by ScrollTrigger.batch. */
+html.js-anim [data-anim],
+html.js-anim [data-anim-step],
+html.js-anim [data-anim-card],
+html.js-anim [data-anim-group] > *,
+html.js-anim [data-anim-lines] .line-mask > span {
+  opacity: 0;
+}
+
+/*
+ * Scroll-revealed headings are pre-split into rows in the markup and masked
+ * here — no runtime splitter, nothing to re-split on resize, and no risk of a
+ * splitter mangling Hebrew. The Hero headline uses FoldText below instead; it
+ * is an LCP candidate and cannot wait on the GSAP chunk at all.
+ */
+.line-mask {
+  display: block;
+  /* .mega/.kw run at line-height 1–1.08, which clips Hebrew descenders
+     (ק ן ך ץ ף) against overflow:hidden. Bleed out and pull back. */
+  padding: 0.08em 0 0.18em;
+  margin: -0.08em 0 -0.18em;
+  overflow: hidden;
+}
+
+.line-mask > span {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   The Hero signal field (src/components/motion/HeroScanner.tsx)
+
+   The canvas is inserted from JS once `ogl` lands, so the fade belongs to the
+   canvas itself — there is no earlier moment to transition from.
+   -------------------------------------------------------------------------- */
+.hero-scanner {
+  /* Off at the header and off at the seam with the next section, so the field
+     never draws a hard edge. Vertical only: no reading direction involved. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 18%,
+    #000 68%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 68%, transparent 100%);
+}
+
+.hero-scanner canvas {
+  animation: scanner-in 900ms var(--ease-out) both;
+}
+
+@keyframes scanner-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   FoldText — panels that unfold around a hinge (src/components/ui/FoldText.tsx)
+
+   Same contract as the mask above and for the same reason: the Hero headline
+   cannot wait on the GSAP chunk, so the whole effect is CSS in the first frame.
+   The component sets the geometry as custom properties on the root; nothing
+   here knows which hinge it is drawing.
+   -------------------------------------------------------------------------- */
+.fold-text {
+  margin: 0;
+}
+
+.fold-line {
+  display: block;
+  /* On the line, not the panel: one vanishing point per line reads as a single
+     sheet folding open, where a perspective per word reads as nine of them. */
+  perspective: var(--fold-perspective, 760px);
+  perspective-origin: 50% 0;
+}
+
+.fold-piece {
+  position: relative;
+  display: inline-block;
+  transform-origin: var(--fold-origin, 50% 0%);
+  backface-visibility: hidden;
+  animation: fold-in var(--fold-duration, 0.6s) var(--fold-ease, var(--ease-out)) both;
+  animation-delay: calc(var(--i, 0) * var(--fold-stagger, 0.045s));
+}
+
+/* The crease: the panel's far edge is turned away from the light while it is
+   folded, so it is shaded and lifts as it lands. Normal blending, not the
+   source component's `multiply` — on a #0F1417 field multiply does nothing. */
+.fold-piece::after {
+  content: "";
+  position: absolute;
+  inset: -0.06em -0.04em;
+  pointer-events: none;
+  background-image: var(--fold-crease-image);
+  opacity: 0;
+  animation: fold-crease var(--fold-duration, 0.6s) var(--fold-ease, var(--ease-out)) both;
+  animation-delay: calc(var(--i, 0) * var(--fold-stagger, 0.045s));
+}
+
+@keyframes fold-in {
+  from {
+    opacity: 0;
+    transform: var(--fold-from, rotateX(-92deg));
+  }
+}
+
+@keyframes fold-crease {
+  from {
+    opacity: var(--fold-crease, 0.5);
+  }
+}
+
+/* The Hero headline, tighter than .mega: three short lines carrying the top of
+   the page want to read as one block, and the fold has no overflow mask to
+   clip Hebrew descenders against. */
+.hero-fold {
+  line-height: 0.94;
+}
+
+/*
+ * The back phone slides out from behind the front one. Transform only, and no
+ * from-state: the phone pair is the page's largest paint, so it must be on the
+ * screen from the first frame — never waiting on the GSAP chunk. The offset is
+ * physical because the geometry is: the phone is positioned at the inline
+ * start, which under dir="rtl" puts it to the side the front phone hides.
+ */
+.phone-back {
+  animation: phone-slide 900ms 120ms var(--ease-out) both;
+}
+
+@keyframes phone-slide {
+  from {
+    transform: translateX(-18%); /* rtl-allow: physical, see above */
+  }
+}
+
+/*
+ * The one scroll-scrubbed moment: a luminance wipe across the second half of
+ * the Why heading, filling in with the reading direction.
+ *
+ * The gradient axis is physical on purpose — it has to be, since the wipe
+ * follows the text — and it is paired with the page's fixed dir="rtl". GSAP
+ * scrubs background-position from 0% to 100%, which walks the window from the
+ * base half of the image to the highlighted one. Both ends of the ramp clear
+ * AA (tertiary 9.97:1, white above it), so every frame in between is readable.
+ */
+html.js-anim .wipe {
+  background-image: linear-gradient(
+    to left, /* rtl-allow: the wipe follows the text, and the page is dir="rtl" */
+    var(--text-primary) 50%,
+    var(--text-tertiary) 50%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * FAQ panels. A native <details> does not animate, and the usual workaround —
+ * holding the `open` attribute back through a JS close — trades semantics for
+ * a transition. ::details-content buys the same transition with no JS and no
+ * change to the markup, so keyboard, screen readers and the FAQPage JSON-LD
+ * all keep working exactly as they did. Firefox has no ::details-content yet
+ * and simply opens instantly, which is the correct fallback.
+ */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size var(--dur-base) var(--ease-standard),
+    content-visibility var(--dur-base) var(--ease-standard) allow-discrete;
+}
+
+details[open]::details-content {
+  block-size: auto;
+}
+
+/* Defensive: the guard class is never added under reduced motion, but if it
+   somehow is, nothing here may leave content hidden or mid-wipe. */
+@media (prefers-reduced-motion: reduce) {
+  html.js-anim [data-anim],
+  html.js-anim [data-anim-step],
+  html.js-anim [data-anim-card],
+  html.js-anim [data-anim-group] > *,
+  html.js-anim [data-anim-lines] .line-mask > span {
+    opacity: 1;
+  }
+  .fold-piece,
+  .fold-piece::after {
+    animation: none;
+  }
+  /* Belt and braces: HeroScanner never mounts its canvas under `reduce`. */
+  .hero-scanner canvas {
+    display: none;
+  }
+  html.js-anim .wipe {
+    background-image: none;
+    color: var(--text-tertiary);
+  }
+  details::details-content {
+    transition: none;
+  }
+}
 }
 
 /* Token override, kept unlayered alongside the :root block it overrides. */
@@ -365,3 +807,135 @@ body:has(dialog[open]) {
   }
 }
 
+
+/* --------------------------------------------------------------------------
+   Admin theme scope
+
+   The dashboard is the one surface with a light mode: the public site is
+   dark-only by design, but an internal tool lives in browser tabs next to
+   Gmail and Sheets, and the team asked for the choice. Instead of a parallel
+   token set, the scope REMAPS the design-system variables above — every
+   component that reads --bg / --surface-card / --text-primary /--border flips
+   with it for free. Dark is the default and is exactly the public palette, so
+   the scope adds nothing until [data-admin-theme="light"] appears (set before
+   paint by the inline script in src/app/admin/layout.tsx, persisted in
+   localStorage).
+
+   Cyan text tones are remapped too: #5ac8e8 on white is unreadable, so in
+   light mode cyan-300/400 resolve to ink-heavy cyans that clear 4.5:1.
+   -------------------------------------------------------------------------- */
+.admin-root {
+  color-scheme: dark;
+  background: var(--bg);
+  color: var(--text-primary);
+
+  /* hover wash over cards/rows: white in dark mode, ink in light. */
+  --ad-hover: rgb(255 255 255 / 0.05);
+  --ad-hover-strong: rgb(255 255 255 / 0.08);
+  --ad-thead: rgb(255 255 255 / 0.02);
+  --ad-code-bg: rgb(0 0 0 / 0.3);
+
+  /* Submission-type chips — the four inquiry types, each its own hue so a
+     scanning eye sorts the inbox without reading. Values are per-theme. */
+  --chip-bug-fg: #f0837c;
+  --chip-bug-bg: rgb(226 86 78 / 0.13);
+  --chip-bug-bd: rgb(226 86 78 / 0.38);
+  --chip-idea-fg: #ecc056;
+  --chip-idea-bg: rgb(232 178 58 / 0.13);
+  --chip-idea-bd: rgb(232 178 58 / 0.38);
+  --chip-artist-fg: #bda5f2;
+  --chip-artist-bg: rgb(146 108 233 / 0.14);
+  --chip-artist-bd: rgb(146 108 233 / 0.4);
+  --chip-copyright-fg: #82b9f0;
+  --chip-copyright-bg: rgb(66 133 244 / 0.14);
+  --chip-copyright-bd: rgb(66 133 244 / 0.4);
+
+  /* Status chips reuse the semantic colours, themed the same way. */
+  --chip-new-fg: var(--cyan-300);
+  --chip-new-bg: rgb(30 176 213 / 0.12);
+  --chip-new-bd: rgb(30 176 213 / 0.4);
+  --chip-progress-fg: var(--color-warning);
+  --chip-progress-bg: rgb(232 178 58 / 0.12);
+  --chip-progress-bd: rgb(232 178 58 / 0.4);
+  --chip-done-fg: var(--color-success);
+  --chip-done-bg: rgb(63 185 132 / 0.12);
+  --chip-done-bd: rgb(63 185 132 / 0.4);
+  --chip-spam-fg: var(--color-error);
+  --chip-spam-bg: rgb(226 86 78 / 0.12);
+  --chip-spam-bd: rgb(226 86 78 / 0.4);
+  --chip-muted-fg: var(--text-tertiary);
+  --chip-muted-bg: rgb(255 255 255 / 0.04);
+  --chip-muted-bd: var(--border);
+}
+
+.admin-root[data-admin-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f6f6;
+  --bg-elevated: #ffffff;
+  --surface-card: #ffffff;
+  --surface-input: #eef1f1;
+  --ink-950: #eaeeed; /* the sidebar */
+  --ink-500: #d3dad8;
+
+  --border: #d3dad8;
+  --border-subtle: rgb(15 20 23 / 0.09);
+
+  --text-primary: #10181b;
+  --text-secondary: #44534e;
+  --text-tertiary: #64736d;
+  --text-disabled: #93a19b;
+
+  /* cyan as TEXT needs ink in light mode; cyan as FILL stays the brand cyan
+     (buttons keep --cyan-500 + --text-on-cyan, which passes on both themes). */
+  --cyan-300: #0b7d9e;
+  --cyan-400: #0e6f8c;
+
+  --color-success: #1e7f56;
+  --color-warning: #8a6414;
+  --color-error: #b3362e;
+
+  --shadow-card: 0 1px 2px rgb(15 20 23 / 0.06);
+
+  --ad-hover: rgb(15 20 23 / 0.045);
+  --ad-hover-strong: rgb(15 20 23 / 0.07);
+  --ad-thead: rgb(15 20 23 / 0.025);
+  --ad-code-bg: rgb(15 20 23 / 0.06);
+
+  --chip-bug-fg: #a82f27;
+  --chip-bug-bg: #fdecea;
+  --chip-bug-bd: #f3beba;
+  --chip-idea-fg: #7a570b;
+  --chip-idea-bg: #fdf3d7;
+  --chip-idea-bd: #ecd79a;
+  --chip-artist-fg: #5f3dcb;
+  --chip-artist-bg: #efeafd;
+  --chip-artist-bd: #d4c6f6;
+  --chip-copyright-fg: #17569e;
+  --chip-copyright-bg: #e7f0fc;
+  --chip-copyright-bd: #bdd6f4;
+
+  --chip-new-fg: #0b6f8d;
+  --chip-new-bg: #e2f4fa;
+  --chip-new-bd: #a8dcec;
+  --chip-progress-fg: #7a570b;
+  --chip-progress-bg: #fdf3d7;
+  --chip-progress-bd: #ecd79a;
+  --chip-done-fg: #16693f;
+  --chip-done-bg: #e4f5ec;
+  --chip-done-bd: #aedec5;
+  --chip-spam-fg: #a82f27;
+  --chip-spam-bg: #fdecea;
+  --chip-spam-bd: #f3beba;
+  --chip-muted-fg: #64736d;
+  --chip-muted-bg: rgb(15 20 23 / 0.05);
+  --chip-muted-bd: #d3dad8;
+}
+
+/* The theme toggle shows the icon of the mode you would switch TO — sun while
+   dark, moon while light — driven by the attribute rather than React state so
+   there is no first-paint flash. */
+.admin-root .admin-icon-sun { display: inline; }
+.admin-root .admin-icon-moon { display: none; }
+.admin-root[data-admin-theme="light"] .admin-icon-sun { display: none; }
+.admin-root[data-admin-theme="light"] .admin-icon-moon { display: inline; }

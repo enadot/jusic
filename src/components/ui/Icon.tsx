@@ -1,12 +1,19 @@
 import {
   Bug,
   ChevronDown,
+  CirclePlay,
+  Clapperboard,
   Download,
   Gamepad2,
   Globe,
+  GraduationCap,
   Lightbulb,
+  ListMusic,
   Mic,
+  Music,
   Play,
+  Podcast,
+  Radio,
   Scale,
   type LucideIcon,
 } from "lucide-react";
@@ -72,6 +79,14 @@ const GLYPHS = {
   balance: Scale,
   expand_more: ChevronDown,
   gamepad: Gamepad2,
+  // The content types in the catalogue band.
+  music_note: Music,
+  queue_music: ListMusic,
+  auto_stories: CirclePlay,
+  school: GraduationCap,
+  podcasts: Podcast,
+  radio: Radio,
+  movie: Clapperboard,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof GLYPHS | keyof typeof BRAND_MARKS;

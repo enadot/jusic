@@ -15,14 +15,64 @@ belong to the product?* If it belongs to the product, do not build it here.
 | Styling | Tailwind CSS v4, CSS-first `@theme` in `src/styles/globals.css` |
 | Icons | `lucide-react` |
 | Content | `src/content/site.ts` (typed module; Sanity is a later milestone) |
-| Data | Neon Postgres + Drizzle — contact form submissions only |
-| Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + `ADMIN_EMAILS` allowlist |
+| Data | Neon Postgres + Drizzle — submissions, the admin allowlist, webhook destinations |
+| Admin auth | Neon Auth (`@neondatabase/auth`, pinned beta) + a two-half allowlist |
 | Validation | `zod`, server-side only |
+| Motion | CSS + `IntersectionObserver` everywhere; `gsap` + `ogl` on the home page only |
 | Package manager | npm |
 | Deploy | Vercel |
 
-Not used: WordPress, jQuery, runtime CSS-in-JS, extra UI kits, extra animation
-libraries.
+Not used: WordPress, jQuery, runtime CSS-in-JS, extra UI kits.
+
+**`gsap` is the one animation library, and it is conditional.** It is loaded by
+`src/components/motion/HomeMotion.tsx` through a dynamic `import()` on idle,
+after the first paint, on `/` and nowhere else — the initial JS of every route
+is unchanged by it. Anything it animates has to be legible without it: the
+from-states in `globals.css` apply only while the guard script in
+`src/app/page.tsx` has put `js-anim` on `<html>`, and that guard removes itself
+if the chunk never lands. Never animate an LCP candidate from `opacity: 0` —
+the hero headline and the phones are revealed by CSS in the first frame for
+exactly that reason. Do not reach for GSAP on another route without measuring
+the route's JS first. `src/components/ui/FoldText.tsx` — the hero headline's
+unfold — is adapted from React Bits but is deliberately a **server component
+driven by CSS keyframes**: the upstream version imports `gsap` at module scope,
+which would drag the library into the initial bundle of any route that used it.
+Keep it that way. `src/components/motion/HeroScanner.tsx` — the Hero's WebGL
+signal field, adapted from the same library — follows the `HomeMotion` rule
+instead: `ogl` is imported dynamically on idle, the loop stops when the Hero
+scrolls away or the tab is hidden, and nothing is fetched at all under
+`prefers-reduced-motion`. Its `opacity` is a **measured** value, not a taste
+one — the cyan headline line sits on that field and has to clear 3:1. Re-tune it
+and re-measure, or leave it alone.
+
+**The stories viewer is hand-rolled, and stays that way.** The rings in the
+Stories band open a `<video>` in a native `<dialog>` — segmented progress,
+tap-through and auto-advance are about eighty lines in
+`src/components/sections/StoriesStrip.tsx`. A stories package would put all of
+that in the home page's initial JS, which is the budget with no slack in it.
+The clips live in `public/stories/` as the client delivered them (VP9 webm, not
+re-encoded — re-encoding them came out *larger*), each with a poster lifted
+from its own first seconds, and nothing is fetched until a ring is clicked:
+`preload="none"`, one mounted `<video>`.
+
+**Dashboard access is a two-half allowlist, and the halves are not
+interchangeable.** `ADMIN_EMAILS` is the **root** list: an env var, unreadable
+to the browser and uneditable from it, checked before the database is touched.
+The `admin_allowlist` table is everyone added since from `/admin/team` — a
+click, no redeploy. `isAllowedAdmin()` unions the two, so a row can never
+revoke a root address, and a database outage narrows access to the root list
+rather than opening the inbox or sealing the dashboard whose own error panel
+explains the outage. **Keep at least one address in `ADMIN_EMAILS`** — it is
+the way back in when the table is empty or unreachable.
+
+**A webhook URL is typed into a browser form and then fetched by the server**,
+which is an SSRF hole unless it is guarded. `webhookSchema` in
+`src/server/validation.ts` requires https and rejects loopback, link-local and
+private-range hosts before a row is written — without it, `/admin/webhooks`
+would reach the cloud metadata endpoint and anything else the function can see.
+It cannot catch a public hostname that resolves to a private address; that
+needs resolution-time checking, which `fetch` does not expose. Do not relax it
+to "make a test endpoint work".
 
 **Everything under `src/server/` is server-only** and must never reach a client
 component — `drizzle`, `zod`, and the Neon SDKs stay out of the public bundle.
@@ -35,12 +85,12 @@ Import server actions by name; import types from `src/lib/`, not from a
 src/
 ├── app/                  routes, sitemap.ts, robots.ts, opengraph-image.tsx
 ├── components/
-│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field
+│   ├── ui/               Button, CtaLink, Icon, Reveal, Modal, Field, FoldText
 │   ├── sections/         one file per home-page section
 │   ├── download/         /download-only components
 │   ├── forms/            contact modal trigger + form
 │   ├── artists/          /artists sections + application form
-│   ├── admin/            dashboard chrome (never imported by the public site)
+│   ├── admin/            dashboard chrome + admin/ui (its own shadcn-style kit)
 │   └── shared/           Container, StickyCta, JsonLd, LegalLayout, UtmCapture
 ├── content/site.ts       every user-facing string
 ├── lib/                  analytics, platform, schema, cn, formState, formToken
@@ -75,7 +125,9 @@ Ported from the Claude Design project `jusic-design-system-bd48b83e`. The rules
 that matter:
 
 - **Dark only.** `#0F1417` background. Cyan looks weak on white; there is no
-  light theme.
+  light theme. The one exception is `/admin`: an internal tool, scoped under
+  `.admin-root` in `globals.css`, which remaps the design-system variables and
+  offers a light mode. Nothing about it leaks to the public site.
 - **Artwork is the colour.** The frame is near-black and low-chroma so covers
   can be loud. Never colour-grade or tint artwork.
 - **One accent.** Cyan `#1EB0D5` is action; sage `#778A84` is structure. No
@@ -114,7 +166,7 @@ never be presented as available. AI is not presented as a product feature.
 Everything goes through `track()` in `src/lib/analytics.ts` — no provider calls
 in components. Every event carries a `placement`
 (`hero | platforms | cta | footer | sticky | header | download | faq | artists |
-legal`).
+stories | legal`).
 UTM params are captured once per session, attached automatically, and posted
 along with every form submission so a lead can be traced to a campaign.
 
