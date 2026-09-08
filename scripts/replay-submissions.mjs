@@ -10,6 +10,13 @@
  *                   same as the row's secret on /admin/webhooks
  *   --since=DATE    only submissions created on or after this date (ISO)
  *   --include-spam  also replay rows marked spam or archived (skipped by default)
+ *   --exclude=TEXT  skip rows whose name or email contains TEXT (case-insensitive;
+ *                   repeat the flag for more than one) — for leaving test
+ *                   enquiries out of a backfill
+ *   --pause=SECONDS wait this long between rows (default 0.4). A scenario that
+ *                   forwards to Gmail needs minutes, not milliseconds: a burst
+ *                   of near-identical mails from one sender is what Gmail's
+ *                   spam filter keys off
  *   --dry-run       print what would be sent and stop
  *
  * DATABASE_URL is read from .env.local, so it runs against whichever database
@@ -33,9 +40,14 @@ const url = args.find((arg) => !arg.startsWith("--"));
 const flag = (name) => args.includes(`--${name}`);
 const option = (name) =>
   args.find((arg) => arg.startsWith(`--${name}=`))?.slice(name.length + 3);
+const options = (name) =>
+  args
+    .filter((arg) => arg.startsWith(`--${name}=`))
+    .map((arg) => arg.slice(name.length + 3))
+    .filter(Boolean);
 
 if (!url) {
-  console.error("usage: node scripts/replay-submissions.mjs <webhook-url> [--secret=…] [--since=DATE] [--include-spam] [--dry-run]");
+  console.error("usage: node scripts/replay-submissions.mjs <webhook-url> [--secret=…] [--since=DATE] [--include-spam] [--exclude=TEXT] [--pause=SECONDS] [--dry-run]");
   process.exit(1);
 }
 if (!url.startsWith("https://")) {
@@ -51,13 +63,20 @@ const secret = option("secret") ?? null;
 const since = option("since") ?? null;
 const includeSpam = flag("include-spam");
 const dryRun = flag("dry-run");
+const excludes = options("exclude").map((text) => text.toLowerCase());
+const pauseSeconds = Number(option("pause") ?? 0.4);
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jusic.co";
 
+if (!Number.isFinite(pauseSeconds) || pauseSeconds < 0) {
+  console.error("--pause must be a number of seconds");
+  process.exit(1);
+}
+
 const SKIPPED_STATUSES = includeSpam ? [] : ["spam", "archived"];
-const PAUSE_MS = 400;
+const PAUSE_MS = Math.round(pauseSeconds * 1000);
 
 const sql = neon(process.env.DATABASE_URL);
-const rows = await sql`
+const allRows = await sql`
   select id, type, status, created_at, name, email, phone, message,
          payload, utm, placement, page_path
   from submissions
@@ -66,8 +85,17 @@ const rows = await sql`
   order by created_at asc
 `;
 
+const isExcluded = (row) => {
+  const haystack = `${row.name ?? ""}\n${row.email ?? ""}`.toLowerCase();
+  return excludes.some((text) => haystack.includes(text));
+};
+const rows = allRows.filter((row) => !isExcluded(row));
+const excluded = allRows.length - rows.length;
+
 console.log(
   `${rows.length} submission${rows.length === 1 ? "" : "s"} to replay → ${url}` +
+    (excluded ? ` (${excluded} excluded)` : "") +
+    (PAUSE_MS >= 1000 ? `, ${pauseSeconds}s apart` : "") +
     (dryRun ? " (dry run)" : ""),
 );
 
