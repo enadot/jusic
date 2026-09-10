@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClass } from "@/components/ui/Button";
+import { buttonVariants } from "@/components/admin/ui/button";
 import { signOut } from "@/server/actions/admin";
 import { getAdminUser } from "@/server/auth";
 import { site } from "@/content/site";
@@ -19,10 +19,10 @@ export default async function NoAccessPage() {
         <h1 className="m-0 text-[26px] font-extrabold tracking-[-0.01em]">
           אין לך הרשאה לאזור הזה
         </h1>
-        <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-text-secondary">
+        <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-[var(--text-secondary)]">
           {user ? (
             <>
-              החשבון <bdi className="text-text-primary">{user.email}</bdi> אינו
+              החשבון <bdi className="text-[var(--text-primary)]">{user.email}</bdi> אינו
               מורשה לגשת ללוח הבקרה. אם זו טעות, פנו למנהל המערכת בכתובת{" "}
               <a href={`mailto:${site.contactEmail}`} dir="ltr">
                 {site.contactEmail}
@@ -36,11 +36,11 @@ export default async function NoAccessPage() {
 
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <form action={signOut}>
-            <button type="submit" className={buttonClass({ variant: "outline" })}>
+            <button type="submit" className={buttonVariants({ variant: "outline" })}>
               התנתקות
             </button>
           </form>
-          <Link href="/" className={buttonClass({ variant: "ghost" })}>
+          <Link href="/" className={buttonVariants({ variant: "ghost" })}>
             חזרה לאתר
           </Link>
         </div>

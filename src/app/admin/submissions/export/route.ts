@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   // A route handler is not covered by requireAdmin()'s redirect contract, so
   // check both halves here explicitly.
   const user = await getAdminUser();
-  if (!user || !isAllowedAdmin(user.email)) {
+  if (!user || !(await isAllowedAdmin(user.email))) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 

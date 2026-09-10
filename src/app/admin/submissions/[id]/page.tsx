@@ -6,7 +6,9 @@ import { getSubmission } from "@/server/queries/submissions";
 import { Shell } from "@/components/admin/Shell";
 import { StatusBadge, TypeBadge } from "@/components/admin/Pieces";
 import { DbError } from "@/components/admin/DbError";
-import { Button, buttonClass } from "@/components/ui/Button";
+import { Button, buttonVariants } from "@/components/admin/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card";
+import { Textarea } from "@/components/admin/ui/input";
 import { setStatus, saveNotes } from "@/server/actions/admin";
 import { SUBMISSION_STATUSES } from "@/server/db/schema";
 import {
@@ -22,8 +24,8 @@ export const metadata = { title: "פנייה" };
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-b border-[var(--border-subtle)] py-3 last:border-0 sm:grid sm:grid-cols-[160px_1fr] sm:gap-4">
-      <dt className="text-[13px] text-text-tertiary">{label}</dt>
-      <dd className="m-0 mt-1 text-[15px] break-words text-text-primary sm:mt-0">
+      <dt className="text-[13px] text-[var(--text-tertiary)]">{label}</dt>
+      <dd className="m-0 mt-1 text-[15px] break-words text-[var(--text-primary)] sm:mt-0">
         {children}
       </dd>
     </div>
@@ -76,7 +78,7 @@ export default async function SubmissionDetailPage({
       actions={
         <a
           href={`mailto:${row.email}?subject=${encodeURIComponent(`תשובה לפנייה שלך ב־Jusic`)}`}
-          className={buttonClass({ variant: "outline", size: "sm" })}
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           השב במייל
         </a>
@@ -84,13 +86,13 @@ export default async function SubmissionDetailPage({
     >
       <Link
         href="/admin/submissions"
-        className="text-[14px] text-text-tertiary hover:text-text-primary"
+        className="text-[14px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
       >
         ← חזרה לכל הפניות
       </Link>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-[14px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5 sm:p-6">
+        <Card className="p-5 sm:p-6">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <TypeBadge type={row.type} />
             <StatusBadge status={row.status} />
@@ -102,13 +104,13 @@ export default async function SubmissionDetailPage({
             </Row>
             <Row label="שם">{row.name}</Row>
             <Row label="אימייל">
-              <a href={`mailto:${row.email}`} dir="ltr" className="hover:text-cyan-300">
+              <a href={`mailto:${row.email}`} dir="ltr" className="hover:text-[var(--cyan-300)]">
                 {row.email}
               </a>
             </Row>
             {row.phone ? (
               <Row label="טלפון">
-                <a href={`tel:${row.phone}`} dir="ltr" className="hover:text-cyan-300">
+                <a href={`tel:${row.phone}`} dir="ltr" className="hover:text-[var(--cyan-300)]">
                   {row.phone}
                 </a>
               </Row>
@@ -127,7 +129,7 @@ export default async function SubmissionDetailPage({
                           target="_blank"
                           rel="noopener noreferrer"
                           dir="ltr"
-                          className="break-all hover:text-cyan-300"
+                          className="break-all hover:text-[var(--cyan-300)]"
                         >
                           {value}
                         </a>
@@ -149,12 +151,15 @@ export default async function SubmissionDetailPage({
               <span className="whitespace-pre-wrap">{row.message}</span>
             </Row>
           </dl>
-        </div>
+        </Card>
 
         <div className="flex flex-col gap-5">
-          <section className="rounded-[14px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5">
-            <h2 className="m-0 text-[15px] font-bold">סטטוס</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>סטטוס</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <div className="flex flex-wrap gap-2">
               {SUBMISSION_STATUSES.map((status) => (
                 <form key={status} action={setStatus}>
                   <input type="hidden" name="id" value={row.id} />
@@ -163,11 +168,11 @@ export default async function SubmissionDetailPage({
                     type="submit"
                     disabled={row.status === status}
                     className={cn(
-                      "rounded-full border px-3 py-1.5 text-[13px] font-bold",
+                      "cursor-pointer rounded-full border px-3 py-1.5 text-[13px] font-bold",
                       "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
                       row.status === status
-                        ? "border-cyan-500 bg-cyan-500/15 text-cyan-300"
-                        : "border-[var(--border)] text-text-secondary hover:bg-white/[0.06] hover:text-text-primary",
+                        ? "cursor-default border-[var(--chip-new-bd)] bg-[var(--chip-new-bg)] text-[var(--chip-new-fg)]"
+                        : "border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--ad-hover)] hover:text-[var(--text-primary)]",
                     )}
                   >
                     {STATUS_LABELS[status]}
@@ -176,7 +181,7 @@ export default async function SubmissionDetailPage({
               ))}
             </div>
             {row.handledBy ? (
-              <p className="mt-3 mb-0 text-[13px] text-text-tertiary">
+              <p className="mt-3 mb-0 text-[13px] text-[var(--text-tertiary)]">
                 עודכן לאחרונה על ידי <bdi>{row.handledBy}</bdi>
                 {row.handledAt ? (
                   <>
@@ -186,21 +191,24 @@ export default async function SubmissionDetailPage({
                 ) : null}
               </p>
             ) : null}
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="rounded-[14px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5">
-            <h2 className="m-0 text-[15px] font-bold">פתק פנימי</h2>
-            <form action={saveNotes} className="mt-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>פתק פנימי</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <form action={saveNotes}>
               <input type="hidden" name="id" value={row.id} />
               <label htmlFor="adminNotes" className="sr-only">
                 פתק פנימי
               </label>
-              <textarea
+              <Textarea
                 id="adminNotes"
                 name="adminNotes"
                 rows={4}
                 defaultValue={row.adminNotes ?? ""}
-                className="w-full rounded-[10px] border border-[var(--border)] bg-[var(--surface-input)] p-3 text-[14px] leading-[1.6] text-text-primary"
               />
               <div className="mt-3">
                 <Button type="submit" variant="outline" size="sm">
@@ -208,11 +216,15 @@ export default async function SubmissionDetailPage({
                 </Button>
               </div>
             </form>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="rounded-[14px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5">
-            <h2 className="m-0 text-[15px] font-bold">מקור</h2>
-            <dl className="m-0 mt-2 text-[13px]">
+          <Card>
+            <CardHeader>
+              <CardTitle>מקור</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
+            <dl className="m-0 text-[13px]">
               <Row label="מיקום הכפתור">{row.placement ?? "—"}</Row>
               <Row label="עמוד">
                 <bdi>{row.pagePath ?? "—"}</bdi>
@@ -227,7 +239,8 @@ export default async function SubmissionDetailPage({
                 <Row label="UTM">—</Row>
               )}
             </dl>
-          </section>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </Shell>

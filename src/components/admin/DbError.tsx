@@ -25,15 +25,15 @@ export function DbError({ error }: { error: unknown }) {
   );
 
   return (
-    <div className="rounded-[14px] border border-[var(--color-error)]/40 bg-[var(--color-error)]/10 p-6">
+    <div className="rounded-[var(--radius-md)] border border-[var(--chip-spam-bd)] bg-[var(--chip-spam-bg)] p-6">
       <h2 className="m-0 text-[18px] font-bold">לא הצלחנו לקרוא מהמסד</h2>
-      <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-text-secondary">
+      <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-[var(--text-secondary)]">
         ודאו ש־<bdi>DATABASE_URL</bdi> מוגדר וש־
         <bdi>npm run db:migrate</bdi> הורץ מול המסד הזה.
       </p>
       <p
         dir="ltr"
-        className="mt-3 mb-0 overflow-x-auto rounded-[10px] bg-black/30 p-3 text-start font-mono text-[12px] text-text-tertiary"
+        className="mt-3 mb-0 overflow-x-auto rounded-[10px] bg-[var(--ad-code-bg)] p-3 text-start font-mono text-[12px] text-[var(--text-tertiary)]"
       >
         {message}
       </p>

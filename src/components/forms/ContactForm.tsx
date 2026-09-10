@@ -136,7 +136,7 @@ export function ContactForm({
         error={errors.consent}
       >
         {copy.consent}{" "}
-        <Link href="/legal/privacy" className="underline">
+        <Link href="/privacy-policy-app" className="underline">
           {copy.consentLink}
         </Link>
       </CheckboxField>

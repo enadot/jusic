@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "מדיניות פרטיות",
   description:
     "איזה מידע נאסף באתר Jusic, לשם מה הוא משמש, למי הוא נמסר, כמה זמן הוא נשמר וכיצד לממש את זכויותיכם לפי חוק הגנת הפרטיות.",
-  alternates: { canonical: "/legal/privacy" },
+  alternates: { canonical: "/privacy-policy-app" },
 };
 
 /**
@@ -194,7 +194,7 @@ export default function PrivacyPage() {
           </>
         ) : null}
         . ראו גם את{" "}
-        <Link href="/legal/terms">תנאי השימוש</Link> ואת{" "}
+        <Link href="/useragreement">תנאי השימוש</Link> ואת{" "}
         <Link href="/legal/copyright">מדיניות זכויות היוצרים</Link>.
       </p>
     </LegalLayout>

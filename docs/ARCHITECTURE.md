@@ -42,7 +42,8 @@ Next.js 16 App Router · TypeScript strict · Tailwind CSS v4 (CSS‑first) ·
 `lucide-react` · npm · Vercel.
 נתונים: **Neon Postgres + Drizzle**. אימות דשבורד: **Neon Auth**. ולידציה: `zod`.
 
-**אין**: Sanity (בשלב זה), shadcn/ui, Magic UI, ספריות אנימציה, CSS‑in‑JS.
+**אין**: Sanity (בשלב זה), shadcn/ui, Magic UI, CSS‑in‑JS. `gsap` הוא ספריית
+האנימציה היחידה, ורק בעמוד הבית — ראו §9.
 
 `drizzle-orm`, `@neondatabase/serverless`, `zod` ו‑`@neondatabase/auth` הם
 **server‑only** — הם לא מגיעים ל‑bundle של אף עמוד שיווקי, וזה נבדק בכל build.
@@ -250,9 +251,9 @@ track(event, { placement, ...params })
 | יעד | מצב |
 | --- | --- |
 | Initial JS | **~152 kB** (תקציב 150 kB — ראו הערה) |
-| RSC by default | `"use client"` רק ב‑5 עלים: `SiteHeader`, `Faq`, `Reveal`, `CtaLink`, `StickyCta`, `DownloadOptions`, `UtmCapture` |
+| RSC by default | `"use client"` רק בעלים: `SiteHeader`, `Faq`, `Reveal`, `CtaLink`, `StickyCta`, `DownloadOptions`, `UtmCapture`, `HomeMotion` (מחזיר `null`) |
 | תמונות | `next/image` בכל מקום, AVIF/WebP, `priority` ל‑Hero בלבד |
-| אנימציה | CSS + `IntersectionObserver`. **אין ספריית אנימציה** — `Reveal` רק מוסיף class |
+| אנימציה | CSS + `IntersectionObserver` בכל האתר. `gsap` + `ScrollTrigger` **רק ב‑`/`**, ב‑`import()` דינמי על idle — ~47KB gz בצ'אנק נפרד, מחוץ ל‑Initial JS של כל route. `ogl` (רקע ה‑WebGL של ההירו) באותה שיטה בדיוק, ורק כשאין `prefers-reduced-motion` |
 | פונטים | משפחה אחת, self‑hosted, `swap` |
 
 `Reveal` משמש גם כטריגר ל‑`section_view`, כדי לא להריץ observer שני על אותם

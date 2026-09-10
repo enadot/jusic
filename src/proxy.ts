@@ -25,6 +25,25 @@ const SESSION_VERIFIER_PARAM = "neon_auth_session_verifier";
 const SESSION_TOKEN_COOKIE = "__Secure-neon-auth.session_token";
 
 export default async function proxy(request: NextRequest) {
+  /**
+   * A server action is a POST to the page it lives on, and the SDK's
+   * middleware (0.4.2-beta) proxies its session check upstream with the
+   * incoming request's method and body. A form submission under /admin thus
+   * became a POST — form body and all — to Neon's GET-only get-session
+   * endpoint, came back non-2xx, and read as "no session": every mutating
+   * action bounced to sign-in with a 307 the action client cannot follow
+   * ("This page couldn't load"). Pages still render because navigations are
+   * GETs, which is why it went unnoticed until someone pressed a button.
+   *
+   * The middleware is only the first gate. requireAdmin() in every action
+   * runs the same check through getSession(), which reads the cookie and
+   * calls upstream with a proper GET, so letting non-GET requests through
+   * here removes nothing. The OAuth return is a GET and still goes below.
+   */
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return NextResponse.next();
+  }
+
   const isOAuthReturn = request.nextUrl.searchParams.has(SESSION_VERIFIER_PARAM);
 
   try {

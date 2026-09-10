@@ -60,6 +60,10 @@ export function Modal({
         onClick={(event) => event.stopPropagation()}
         className={cn(
           "relative flex max-h-[88svh] w-full flex-col overflow-hidden",
+          // The dialog inherits text-align from wherever its trigger rendered
+          // (the footer is text-center), so the panel resets to the reading
+          // direction itself — labels and copy start-align in any context.
+          "text-start",
           "bg-[var(--surface-card)] shadow-[var(--shadow-raised)]",
           "border border-[var(--border-subtle)]",
           "rounded-t-[28px] sm:mx-auto sm:w-[520px] sm:max-w-[calc(100vw-32px)] sm:rounded-[20px]",

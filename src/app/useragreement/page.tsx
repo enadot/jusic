@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "תקנון ותנאי שימוש",
   description:
     "תנאי השימוש באתר Jusic — מה האתר מציע, מה מותר ומה אסור, קניין רוחני, אחריות ודרכי יצירת קשר.",
-  alternates: { canonical: "/legal/terms" },
+  alternates: { canonical: "/useragreement" },
 };
 
 /**
@@ -59,7 +59,7 @@ export default function TermsPage() {
         ולבקשות הצטרפות של אמנים. אנחנו משתדלים לענות לכל פנייה, אך משלוח טופס
         אינו יוצר התחייבות מצדנו — לרבות התחייבות להתקשרות, לשיתוף פעולה או
         להעלאת יצירות לשירות. המידע הנמסר בטפסים מטופל לפי{" "}
-        <Link href="/legal/privacy">מדיניות הפרטיות</Link>.
+        <Link href="/privacy-policy-app">מדיניות הפרטיות</Link>.
       </p>
       <p>
         רעיון או הצעה שתשלחו אלינו ביוזמתכם — נהיה רשאים לעשות בהם שימוש לשיפור
