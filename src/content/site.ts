@@ -545,8 +545,8 @@ export const artists = {
 } as const;
 
 export const legalLinks = [
-  { label: "תקנון ותנאי שימוש", href: "/legal/terms" },
-  { label: "מדיניות פרטיות", href: "/legal/privacy" },
+  { label: "תקנון ותנאי שימוש", href: "/useragreement" },
+  { label: "מדיניות פרטיות", href: "/privacy-policy-app" },
   { label: "הצהרת נגישות", href: "/legal/accessibility" },
   { label: "זכויות יוצרים", href: "/legal/copyright" },
 ] as const;

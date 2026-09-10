@@ -216,5 +216,5 @@ quota — no captcha, and the raw IP is never stored. The signed stamp comes fro
 `/api/form-token` rather than from render, because the pages carrying the forms
 are statically prerendered.
 
-**Forms must not go live in production until `/legal/privacy` has real text** —
+**Forms must not go live in production until `/privacy-policy-app` has real text** —
 see `docs/OPEN_ITEMS.md` #3א.
