@@ -16,5 +16,21 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <div className="min-h-dvh bg-[var(--bg)]">{children}</div>;
+  return (
+    // suppressHydrationWarning: the theme script below sets data-admin-theme
+    // before hydration, so the server markup legitimately differs by exactly
+    // that attribute — the same deal next-themes makes with <html>.
+    <div id="admin-root" className="admin-root min-h-dvh" suppressHydrationWarning>
+      {/* Applies the saved theme before anything below paints. First child of
+          the scope div so the element exists; dark needs no attribute at all,
+          which is also what a failed read falls back to. Key must match
+          ADMIN_THEME_KEY in components/admin/ui/ThemeToggle.tsx. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{if(localStorage.getItem("jusic-admin-theme")==="light")document.getElementById("admin-root").dataset.adminTheme="light"}catch(e){}`,
+        }}
+      />
+      {children}
+    </div>
+  );
 }

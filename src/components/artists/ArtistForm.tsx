@@ -199,7 +199,7 @@ export function ArtistForm() {
         error={errors.consent}
       >
         {shared.consent}{" "}
-        <Link href="/legal/privacy" className="underline">
+        <Link href="/privacy-policy-app" className="underline">
           {shared.consentLink}
         </Link>
       </CheckboxField>

@@ -17,6 +17,7 @@ export type AnalyticsEvent =
   | "bug_report_click"
   | "idea_contact_click"
   | "faq_open"
+  | "story_open"
   | "section_view"
   | "sticky_cta_click"
   // Contact and artist forms. form_open fires on the trigger, the rest on the
@@ -37,6 +38,8 @@ export type Placement =
   | "download"
   | "faq"
   | "artists"
+  /** The stories band on the home page. */
+  | "stories"
   /** The copyright form, reached from /legal/copyright rather than the footer. */
   | "legal";
 

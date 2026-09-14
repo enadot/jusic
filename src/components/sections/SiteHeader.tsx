@@ -36,10 +36,10 @@ export function SiteHeader() {
           <Image
             src="/brand/logo-white.png"
             alt={site.wordmark}
-            width={70}
-            height={28}
+            width={80}
+            height={32}
             priority
-            className="h-7 w-auto"
+            className="h-8 w-auto"
           />
         </Link>
 

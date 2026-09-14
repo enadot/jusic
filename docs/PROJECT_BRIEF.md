@@ -182,8 +182,8 @@ Framer Motion ו-Magic UI קיימים כדי לתת תחושת מוצר פרי�
   #contact              יצירת קשר
 /download               עמוד הורדה מלא + הוראות APK למכשירים כשרים
 /artists                עמוד אמנים ובעלי זכויות
-/legal/terms            תקנון ותנאי שימוש
-/legal/privacy          מדיניות פרטיות
+/useragreement          תקנון ותנאי שימוש
+/privacy-policy-app     מדיניות פרטיות
 /legal/accessibility    הצהרת נגישות
 /legal/copyright        זכויות יוצרים
 /l/[slug]               עמודי נחיתה לקמפיינים (מנוהלים ב-Sanity)

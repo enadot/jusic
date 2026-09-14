@@ -9,8 +9,10 @@ import {
 } from "@/components/admin/Pieces";
 import { TYPE_LABELS } from "@/server/admin-labels";
 import type { SubmissionType } from "@/server/db/schema";
-import { buttonClass } from "@/components/ui/Button";
+import { badgeVariants } from "@/components/admin/ui/badge";
+import { buttonVariants } from "@/components/admin/ui/button";
 import { DbError } from "@/components/admin/DbError";
+import { cn } from "@/lib/cn";
 
 export default async function AdminOverviewPage() {
   const user = await requireAdmin();
@@ -39,12 +41,17 @@ export default async function AdminOverviewPage() {
         <ul className="mt-4 flex list-none flex-wrap gap-2 p-0">
           {overview.byType.map((row) => (
             <li key={row.type}>
+              {/* The type chip doubles as a filter link — same colours as the
+                  table badges, so the legend and the data agree. */}
               <Link
                 href={`/admin/submissions?type=${row.type}`}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-3.5 py-2 text-[13px] text-text-secondary hover:bg-white/[0.05] hover:text-text-primary"
+                className={cn(
+                  badgeVariants({ variant: row.type as SubmissionType }),
+                  "px-3.5 py-2 text-[13px] transition-opacity hover:opacity-80",
+                )}
               >
                 {TYPE_LABELS[row.type as SubmissionType] ?? row.type}
-                <bdi className="font-bold text-text-primary">{row.count}</bdi>
+                <bdi className="font-extrabold">{row.count}</bdi>
               </Link>
             </li>
           ))}
@@ -56,7 +63,7 @@ export default async function AdminOverviewPage() {
           <h2 className="m-0 text-[18px] font-bold">הפניות האחרונות</h2>
           <Link
             href="/admin/submissions"
-            className={buttonClass({ variant: "ghost", size: "sm" })}
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
           >
             לכל הפניות
           </Link>

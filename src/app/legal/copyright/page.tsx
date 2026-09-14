@@ -97,8 +97,8 @@ export default function CopyrightPage() {
         <a href={`mailto:${site.contactEmail}`} dir="ltr">
           {site.contactEmail}
         </a>
-        . ראו גם את <Link href="/legal/terms">תנאי השימוש</Link> ואת{" "}
-        <Link href="/legal/privacy">מדיניות הפרטיות</Link>.
+        . ראו גם את <Link href="/useragreement">תנאי השימוש</Link> ואת{" "}
+        <Link href="/privacy-policy-app">מדיניות הפרטיות</Link>.
       </p>
     </LegalLayout>
   );
