@@ -6,7 +6,7 @@ import { hero, kislev, links } from "@/content/site";
 
 /**
  * The campaign hero. It says what the banner said, in the order the banner
- * said it: the question, the stop, the answer, the four bullets — but in the
+ * said it: the question, the answer, the four bullets — but in the
  * design system's own voice: ink and cyan, no sticker colours.
  *
  * Beside it, two real screens from the app in its Chanukah season, framed
@@ -51,10 +51,11 @@ export function KislevHero() {
 
           <FoldText
             as="h1"
-            className="kw hero-fold mt-4"
+            className="mega hero-fold kislev-h1 mt-4"
             lines={[
-              { text: kislev.stopA },
-              { text: kislev.stopB, className: "text-cyan-400" },
+              { text: kislev.headline[0] },
+              { text: kislev.headline[1] },
+              { text: kislev.headline[2], className: "text-cyan-400" },
             ]}
             duration={0.6}
             stagger={0.06}

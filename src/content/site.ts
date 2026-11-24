@@ -632,15 +632,18 @@ export const kislev = {
   path: "/kislev",
   utmCampaign: "jusic_kislev_dreidel",
   meta: {
-    title: "תפסיקו להסתובב! ג׳וזיק. האקסטרה של המוזיקה",
+    title: "כל המוזיקה היהודית במקום אחד. גם בחנוכה. | ג׳וזיק",
     description:
       "מחפשים מוזיקה תוססת, צעירה, עדכנית? האזנה ללא הגבלה, הכי מעודכן, קליפי וידאו וסטורי אמנים — בג׳וזיק.",
   },
   question: "מחפשים מוזיקה",
   tags: ["תוססת,", "צעירה,", "עדכנית?"],
-  /** "תפסיקו להסתובב!" — the H1, split over two lines. */
-  stopA: "תפסיקו",
-  stopB: "להסתובב!",
+  /**
+   * The H1: the site's approved line, with Chanukah as its third row (client
+   * request, 24.11.26 — replaces the banner's "תפסיקו להסתובב!"). The last
+   * row is the cyan one.
+   */
+  headline: ["כל המוזיקה היהודית", "במקום אחד.", "גם בחנוכה."],
   headingA: "ג׳וזיק. האקסטרה",
   headingB: "של המוזיקה!",
   bullets: ["האזנה ללא הגבלה", "הכי מעודכן", "קליפי וידאו", "סטורי אמנים"],

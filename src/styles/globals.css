@@ -958,6 +958,9 @@ details[open]::details-content {
   from { background-size: 0% 3px; }
 }
 
+/* A notch under .mega, so "כל המוזיקה היהודית" holds one line beside the phones. */
+.kislev-h1 { font-size: clamp(40px, 5.2vw, 84px); }
+
 .kislev-stories [data-anim-demo] { gap: 8px; }
 .kislev-stories [data-anim-demo] img { width: 58px; height: 58px; }
 
