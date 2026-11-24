@@ -1,12 +1,12 @@
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
+import { FoldText } from "@/components/ui/FoldText";
 import { hero, kislev, links } from "@/content/site";
-
-const TAG_TONES = ["kislev-tag-yellow", "kislev-tag-cyan", "kislev-tag-black"];
 
 /**
  * The campaign hero. It says what the banner said, in the order the banner
- * said it: the question, the stop, the answer, the four bullets.
+ * said it: the question, the stop, the answer, the four bullets — but in the
+ * design system's own voice: ink and cyan, no sticker colours.
  *
  * The dreidel is the banner's own 12-frame sprite. It spins on arrival,
  * winds down and comes to rest on frame 0, the one with the logo facing out,
@@ -15,38 +15,65 @@ const TAG_TONES = ["kislev-tag-yellow", "kislev-tag-cyan", "kislev-tag-black"];
  */
 export function KislevHero() {
   return (
-    <section className="kislev-hero relative overflow-hidden">
-      <Container className="relative grid items-center gap-8 pt-32 pb-16 mid:grid-cols-[1.15fr_0.85fr] mid:pt-36 mid:pb-24">
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(200deg, var(--color-ink-800) 0%, var(--color-ink-900) 60%)",
+      }}
+    >
+      {/* The one lighting effect: a cyan bloom behind the dreidel. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-10 h-[760px] w-[760px] rounded-full blur-[40px] mid:top-1/2 mid:-translate-y-1/2"
+        style={{
+          insetInlineEnd: "-8%",
+          background:
+            "radial-gradient(circle, rgb(30 176 213 / 0.28), transparent 62%)",
+        }}
+      />
+
+      <Container className="relative grid items-center gap-6 pt-28 pb-16 mid:grid-cols-[1.1fr_0.9fr] mid:gap-10 mid:pt-36 mid:pb-24">
         <div>
-          <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2 text-[clamp(20px,2.1vw,30px)] leading-none font-extrabold">
-            <span>{kislev.question}</span>
+          <p className="m-0 text-[clamp(19px,1.8vw,26px)] leading-[1.35] font-bold text-text-secondary">
+            {kislev.question}{" "}
             {kislev.tags.map((tag, i) => (
-              <span
-                key={tag}
-                className={`kislev-tag ${TAG_TONES[i]}`}
-                style={{ animationDelay: `${0.15 + i * 0.12}s` }}
-              >
-                {tag}
+              <span key={tag}>
+                <span
+                  className="kislev-word text-text-primary"
+                  style={{ animationDelay: `${0.7 + i * 0.15}s` }}
+                >
+                  {tag}
+                </span>
+                {i < kislev.tags.length - 1 ? " " : ""}
               </span>
             ))}
           </p>
 
-          <p className="kislev-stop m-0 mt-7 inline-block text-[clamp(26px,3vw,44px)] leading-none font-extrabold">
-            {kislev.stop}
+          <FoldText
+            as="h1"
+            className="kw hero-fold mt-4"
+            lines={[
+              { text: kislev.stopA },
+              { text: kislev.stopB, className: "text-cyan-400" },
+            ]}
+            duration={0.6}
+            stagger={0.06}
+            perspective={900}
+            creaseShading={0.55}
+          />
+
+          <p className="mt-5 mb-0 text-[clamp(24px,2.6vw,38px)] leading-[1.15] font-extrabold tracking-[-0.01em]">
+            {kislev.headingA} {kislev.headingB}
           </p>
 
-          <h1 className="mega mt-5">
-            {kislev.headingA}
-            <br />
-            <span className="text-cyan-400">{kislev.headingB}</span>
-          </h1>
-
-          <ul className="mt-7 grid list-none grid-cols-2 gap-x-6 gap-y-3 p-0 text-[clamp(16px,1.3vw,19px)] font-bold text-text-secondary min-[560px]:max-w-[460px]">
+          <ul className="mt-7 flex list-none flex-wrap gap-2 p-0">
             {kislev.bullets.map((b) => (
-              <li key={b} className="flex items-center gap-2">
-                <span aria-hidden="true" className="text-cyan-400">
-                  ‹
-                </span>
+              <li
+                key={b}
+                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[15px] font-bold text-text-secondary"
+              >
+                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
                 {b}
               </li>
             ))}
@@ -85,7 +112,14 @@ export function KislevHero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-[min(58vw,300px)] mid:w-[min(100%,400px)]">
+        {/* First on phones, so the dreidel is part of the first screen. */}
+        <div className="relative order-first mx-auto w-[min(42vw,170px)] mid:order-none mid:w-[min(100%,420px)]">
+          {/* Sound-wave rings: the stage the dreidel stops on. */}
+          <div aria-hidden="true" className="kislev-waves">
+            <i />
+            <i />
+            <i />
+          </div>
           <div aria-hidden="true" className="kislev-floor">
             <i />
             <i />
