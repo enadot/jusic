@@ -939,3 +939,90 @@ details[open]::details-content {
 .admin-root .admin-icon-moon { display: none; }
 .admin-root[data-admin-theme="light"] .admin-icon-sun { display: none; }
 .admin-root[data-admin-theme="light"] .admin-icon-moon { display: inline; }
+
+/* ==========================================================================
+   Campaign: Kislev dreidel (/kislev)
+   A scoped, client-approved exception for one campaign page: the banners'
+   violet night and their sticker tags. Nothing here is used outside .kislev-*.
+   ========================================================================== */
+.kislev-hero {
+  background:
+    radial-gradient(60% 70% at 20% 30%, rgb(120 30 140 / 0.45), transparent 70%),
+    radial-gradient(50% 60% at 85% 10%, rgb(70 20 120 / 0.55), transparent 70%),
+    radial-gradient(40% 50% at 15% 85%, rgb(30 176 213 / 0.16), transparent 70%),
+    linear-gradient(180deg, #1a0630 0%, #160a2a 55%, var(--bg) 100%);
+}
+
+/* Sticker tags. Text colours checked: red on yellow 3.6:1 and ink on cyan
+   7.4:1 both clear 3:1 for text this large and this heavy. */
+.kislev-tag {
+  display: inline-block;
+  padding: 0.08em 0.28em 0.14em;
+  line-height: 1;
+  animation: kislev-tag-in 640ms var(--ease-out) both;
+}
+.kislev-tag-yellow { background: #fff200; color: #d42a22; }
+.kislev-tag-cyan { background: var(--cyan-500); color: var(--text-on-cyan); }
+.kislev-tag-black { background: #000; color: #fff200; }
+
+.kislev-stop {
+  background: #fff200;
+  color: #d42a22;
+  padding: 0.1em 0.3em 0.16em;
+  transform: rotate(-2deg);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  animation: kislev-stop-in 640ms var(--ease-out) 0.5s both;
+}
+
+@keyframes kislev-tag-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+@keyframes kislev-stop-in {
+  from { opacity: 0; transform: rotate(-2deg) scale(1.25); }
+}
+
+/* The dreidel: 12 frames, 235x290 each. It spins fast, winds down over
+   three runs and stops; with no fill-mode it rests on the base frame 0 —
+   the logo facing out. Not a loop: it plays once per visit. */
+.kislev-dreidel {
+  background: url("/campaign/kislev/dreidel-sprite.webp") 0 0 / 1200% 100% no-repeat;
+  filter: drop-shadow(0 0 18px rgb(30 176 213 / 0.45));
+  animation:
+    kislev-spin 0.42s steps(12, jump-none) 0s 5,
+    kislev-spin 0.75s steps(12, jump-none) 2.1s 2,
+    kislev-spin 1.3s steps(12, jump-none) 3.6s 1;
+}
+@keyframes kislev-spin {
+  from { background-position-x: 0%; }
+  to { background-position-x: 100%; }
+}
+
+.kislev-floor {
+  position: absolute;
+  inset-inline: -10%;
+  bottom: -6%;
+  height: 22%;
+}
+.kislev-floor i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgb(56 191 220 / 0.85);
+  box-shadow: 0 0 10px rgb(56 191 220 / 0.6);
+  opacity: 0;
+  animation: kislev-ripple 1.5s linear 3;
+}
+.kislev-floor i:nth-child(2) { animation-delay: 0.5s; }
+.kislev-floor i:nth-child(3) { animation-delay: 1s; }
+@keyframes kislev-ripple {
+  0% { transform: scale(0.25); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.kislev-stories [data-anim-demo] { gap: 8px; }
+.kislev-stories [data-anim-demo] img { width: 58px; height: 58px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kislev-tag, .kislev-stop, .kislev-dreidel, .kislev-floor i { animation: none; }
+}
