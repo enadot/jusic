@@ -2,6 +2,8 @@ import "server-only";
 
 import { createNeonAuth, type NeonAuth } from "@neondatabase/auth/next/server";
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { allowlistEmails } from "./queries/admins";
 
 /**
  * Neon Auth (Managed Better Auth) guards the dashboard. Users live in Neon's
@@ -66,20 +68,61 @@ export const RESET_PASSWORD_PATH = "/admin/reset-password";
  * Neon Auth will happily let a stranger sign themselves up. Signing in is
  * therefore only half the check — the address also has to be on the allowlist,
  * or the whole contact inbox is public. Keep both halves.
+ *
+ * The allowlist has two halves of its own:
+ *
+ * - **ADMIN_EMAILS** (here) is the root list. It needs no database, cannot be
+ *   edited from the browser, and is what gets the first person in — and back
+ *   in if the table below is emptied or the database is unreachable. Keep at
+ *   least one address in it.
+ * - **admin_allowlist** (the table) is everyone added since, from /admin/team.
+ *   Adding a teammate is a click rather than an env var and a redeploy.
+ *
+ * A row can never *remove* an env address: the two lists are unioned, and the
+ * root list is the one that cannot lock itself out.
  */
-export function adminEmails(): string[] {
+export function envAdminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
 }
 
-export function isAllowedAdmin(email: string | null | undefined): boolean {
+export function isRootAdmin(email: string | null | undefined): boolean {
   if (!email) return false;
-  const allowed = adminEmails();
-  // An empty allowlist locks everyone out rather than letting everyone in.
-  if (allowed.length === 0) return false;
-  return allowed.includes(email.toLowerCase());
+  return envAdminEmails().includes(email.toLowerCase());
+}
+
+/**
+ * Deduped per request: every dashboard page calls requireAdmin(), and several
+ * render server components that check again. React's cache() collapses those
+ * into one round trip without any of them knowing about each other.
+ */
+const cachedAllowlist = cache(async (): Promise<string[]> => {
+  try {
+    const rows = await allowlistEmails();
+    return rows.map((row) => row.toLowerCase());
+  } catch (error) {
+    /**
+     * The database is down or unconfigured. An empty result here means the
+     * env list alone decides (it is checked before this runs) — never
+     * "everyone", which would open the inbox, and never a hard throw, which
+     * would take down the dashboard whose own DbError panel explains the
+     * outage. Root admins keep working; teammates wait for the database.
+     */
+    console.error("[auth] allowlist read failed, falling back to ADMIN_EMAILS", error);
+    return [];
+  }
+});
+
+export async function isAllowedAdmin(
+  email: string | null | undefined,
+): Promise<boolean> {
+  if (!email) return false;
+  const address = email.toLowerCase();
+  // Checked first, so a root admin is let in without touching the database.
+  if (envAdminEmails().includes(address)) return true;
+  return (await cachedAllowlist()).includes(address);
 }
 
 export type AdminUser = {
@@ -107,6 +150,6 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 export async function requireAdmin(): Promise<AdminUser> {
   const user = await getAdminUser();
   if (!user) redirect(SIGN_IN_PATH);
-  if (!isAllowedAdmin(user.email)) redirect(NO_ACCESS_PATH);
+  if (!(await isAllowedAdmin(user.email))) redirect(NO_ACCESS_PATH);
   return user;
 }

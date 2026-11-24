@@ -37,7 +37,9 @@ npm run dev
 | `/` | עמוד הבית (One Pager) |
 | `/download` | עמוד הורדה מלא, כולל הוראות התקנת APK למכשירים כשרים |
 | `/legal/accessibility` | הצהרת נגישות |
-| `/legal/terms`, `/legal/privacy`, `/legal/copyright` | ממתינים לנוסח משפטי (`noindex`) |
+| `/useragreement` | תקנון ותנאי שימוש |
+| `/privacy-policy-app` | מדיניות פרטיות |
+| `/legal/copyright` | זכויות יוצרים |
 
 ## לפני עלייה לאוויר
 

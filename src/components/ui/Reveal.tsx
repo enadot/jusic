@@ -11,18 +11,23 @@ import type { Placement } from "@/lib/analytics";
  * this component only toggles the class.
  *
  * Doubles as the section_view analytics trigger so we do not need a second
- * observer over the same elements.
+ * observer over the same elements — which is why `visual={false}` exists: on
+ * the home page GSAP animates the contents of some of these sections itself,
+ * and the wrapper has to keep observing without also fading them.
  */
 export function Reveal({
   children,
   className,
   sectionId,
   placement,
+  visual = true,
 }: {
   children: ReactNode;
   className?: string;
   sectionId?: string;
   placement?: Placement;
+  /** Set false to keep the observer but drop the fade — see above. */
+  visual?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -55,7 +60,7 @@ export function Reveal({
   }, [sectionId, placement]);
 
   return (
-    <div ref={ref} className={cn("rv", className)}>
+    <div ref={ref} className={cn(visual && "rv", className)}>
       {children}
     </div>
   );

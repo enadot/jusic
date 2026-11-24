@@ -41,7 +41,8 @@ export const metadata: Metadata = {
     url: site.url,
     title: site.title,
     description: site.description,
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: site.name }],
+    // the image comes from src/app/opengraph-image.jpg (file convention);
+    // listing it here as well would override the generated, hashed URL.
   },
   twitter: {
     card: "summary_large_image",

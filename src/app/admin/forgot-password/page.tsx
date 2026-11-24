@@ -10,17 +10,19 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-[400px]">
         <Link
           href="/"
-          className="font-[var(--font-display)] text-[22px] font-extrabold tracking-[0.02em] text-text-primary"
+          className="font-[var(--font-display)] text-[22px] font-extrabold tracking-[0.02em] text-[var(--text-primary)]"
         >
           {site.wordmark}
         </Link>
-        <h1 className="mt-6 mb-1 text-[26px] font-extrabold tracking-[-0.01em]">
+<div className="mt-6 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]">
+        <h1 className="mt-0 mb-1 text-[24px] font-extrabold tracking-[-0.01em]">
           איפוס סיסמה
         </h1>
-        <p className="mt-0 mb-7 text-[15px] leading-[1.6] text-text-secondary">
+        <p className="mt-0 mb-7 text-[15px] leading-[1.6] text-[var(--text-secondary)]">
           נשלח קישור לבחירת סיסמה חדשה לכתובת שאיתה נרשמת.
         </p>
         <ForgotPasswordForm />
+        </div>
       </div>
     </div>
   );

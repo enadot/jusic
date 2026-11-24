@@ -24,14 +24,23 @@ export function Creators() {
           className="mx-auto max-w-[860px] text-center"
           sectionId="creators"
           placement="cta"
+          visual={false}
         >
-          <h2 className="mega text-white">
-            {creators.headingA} <span className="opacity-75">{creators.headingB}</span>
+          <h2 className="mega text-white" data-anim-lines="">
+            <span className="line-mask">
+              <span>
+                {creators.headingA}{" "}
+                <span className="opacity-75">{creators.headingB}</span>
+              </span>
+            </span>
           </h2>
-          <p className="mt-6 text-[clamp(17px,1.5vw,22px)] leading-[1.7] text-white/90">
+          <p
+            data-anim-step=""
+            className="mt-6 text-[clamp(17px,1.5vw,22px)] leading-[1.7] text-white/90"
+          >
             {creators.body}
           </p>
-          <div className="mt-8">
+          <div data-anim-step="" className="mt-8">
             <CtaLink
               href="/artists"
               event="artist_contact_click"

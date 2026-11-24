@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { CtaLink } from "@/components/ui/CtaLink";
@@ -9,11 +10,55 @@ import { artists } from "@/content/site";
  * leaf on this page is the form itself.
  */
 
+/**
+ * Client-supplied stage photography behind the /artists hero. It is not part
+ * of `public/atmos/` on purpose: that set is abstract AI imagery with no
+ * people in it, and this is a real photograph of a real performance, so it
+ * lives on its own under `public/stage/`.
+ *
+ * The photo is flipped. Its light is all on one side, and in RTL that is the
+ * same side the copy sits on; mirroring moves the performer to the empty end
+ * of the band instead of behind the headline, which is what lets the scrim
+ * stay light enough for the photo to read at all.
+ *
+ * The scrim is a measured value, not a taste one. Sampled against the
+ * brightest pixel actually under each text run, at 360/390/500/640/700/820/
+ * 900/1024/1440/1920: the eyebrow (cyan-400, 13px) never drops below 8.5:1
+ * and the body never below 5.1:1. Three steps, because the crop moves: phones
+ * land on the dark half and need little, the tablet range lands on the
+ * spotlights and needs most, and from `mid` up the copy is confined to the
+ * start half so the wash can be a gradient and leave the performer lit.
+ * Re-crop it, drop the flip or restyle the hero, and re-measure.
+ */
+function StageBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <Image
+        src="/stage/artists-bg.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="scale-x-[-1] object-cover object-[15%_35%]"
+      />
+      {/*
+       * `to left` is deliberate rather than an RTL slip: the page is RTL-only,
+       * so the start side the copy occupies is the one the gradient has to
+       * end up opaque on.
+       */}
+      <div className="absolute inset-0 bg-[rgba(15,20,23,0.62)] sm:bg-[rgba(15,20,23,0.78)] mid:bg-[linear-gradient(to_left,rgba(15,20,23,0.55)_0%,rgba(15,20,23,0.42)_45%,rgba(15,20,23,0.15)_80%,rgba(15,20,23,0.28)_100%)]" />
+      {/* Fades the photo into the page so the section below needs no rule. */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--bg)_0%,rgba(15,20,23,0)_38%)]" />
+    </div>
+  );
+}
+
 export function ArtistHero() {
   const copy = artists.hero;
 
   return (
-    <section className="relative pt-36 pb-16">
+    <section className="relative isolate overflow-hidden pt-36 pb-24">
+      <StageBackdrop />
       <Container>
         <p className="m-0 text-[13px] font-bold tracking-[0.14em] text-cyan-400 uppercase">
           {copy.eyebrow}

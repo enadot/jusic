@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/shared/Container";
+import { FooterDots } from "@/components/motion/FooterDots";
 import { ContactModalTrigger } from "@/components/forms/ContactModalTrigger";
 import { Reveal } from "@/components/ui/Reveal";
 import type { IconName } from "@/components/ui/Icon";
@@ -7,8 +8,9 @@ import { contact, copyrightLine, legalLinks } from "@/content/site";
 
 export function SiteFooter() {
   return (
-    <footer id="contact" className="bg-[var(--ink-950)]">
-      <Container className="pt-16 pb-10 text-center">
+    <footer id="contact" className="relative isolate overflow-hidden bg-[var(--ink-950)]">
+      <FooterDots />
+      <Container className="relative pt-16 pb-10 text-center">
         <Reveal sectionId="contact" placement="footer">
           <h2 className="m-0 mx-auto max-w-[760px] font-[var(--font-display)] text-[clamp(26px,2.6vw,40px)] font-extrabold tracking-[-0.02em]">
             {contact.heading}
