@@ -958,70 +958,9 @@ details[open]::details-content {
   from { background-size: 0% 3px; }
 }
 
-/* The dreidel: 12 frames, 235x290 each. It spins fast, winds down over
-   three runs and stops; with no fill-mode it rests on the base frame 0 —
-   the logo facing out. Not a loop: it plays once per visit. */
-.kislev-dreidel {
-  background: url("/campaign/kislev/dreidel-sprite.webp") 0 0 / 1200% 100% no-repeat;
-  filter: drop-shadow(0 0 22px rgb(30 176 213 / 0.4));
-  animation:
-    kislev-spin 0.42s steps(12, jump-none) 0s 5,
-    kislev-spin 0.75s steps(12, jump-none) 2.1s 2,
-    kislev-spin 1.3s steps(12, jump-none) 3.6s 1;
-}
-@keyframes kislev-spin {
-  from { background-position-x: 0%; }
-  to { background-position-x: 100%; }
-}
-
-/* Static sound-wave rings behind the dreidel: the stage it lands on. */
-.kislev-waves {
-  position: absolute;
-  inset: -18% -30%;
-  pointer-events: none;
-}
-.kislev-waves i {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  aspect-ratio: 1;
-  height: 100%;
-  border-radius: 50%;
-  border: 1px solid rgb(56 191 220 / 0.22);
-  animation: kislev-wave-in 900ms var(--ease-out) 4.6s both;
-}
-.kislev-waves i:nth-child(2) { height: 78%; border-color: rgb(56 191 220 / 0.32); animation-delay: 4.5s; }
-.kislev-waves i:nth-child(3) { height: 56%; border-color: rgb(119 138 132 / 0.35); animation-delay: 4.4s; }
-@keyframes kislev-wave-in {
-  from { opacity: 0; transform: scale(0.9); }
-}
-
-.kislev-floor {
-  position: absolute;
-  inset-inline: -10%;
-  bottom: -6%;
-  height: 22%;
-}
-.kislev-floor i {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid rgb(56 191 220 / 0.85);
-  box-shadow: 0 0 10px rgb(56 191 220 / 0.6);
-  opacity: 0;
-  animation: kislev-ripple 1.5s linear 3;
-}
-.kislev-floor i:nth-child(2) { animation-delay: 0.5s; }
-.kislev-floor i:nth-child(3) { animation-delay: 1s; }
-@keyframes kislev-ripple {
-  0% { transform: scale(0.25); opacity: 0; }
-  15% { opacity: 1; }
-  100% { transform: scale(1); opacity: 0; }
-}
-
 .kislev-stories [data-anim-demo] { gap: 8px; }
 .kislev-stories [data-anim-demo] img { width: 58px; height: 58px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .kislev-word, .kislev-dreidel, .kislev-waves i, .kislev-floor i { animation: none; }
+  .kislev-word { animation: none; }
 }

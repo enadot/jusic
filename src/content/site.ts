@@ -644,7 +644,17 @@ export const kislev = {
   headingA: "ג׳וזיק. האקסטרה",
   headingB: "של המוזיקה!",
   bullets: ["האזנה ללא הגבלה", "הכי מעודכן", "קליפי וידאו", "סטורי אמנים"],
-  dreidelAlt: "סביבון רמקול עם הלוגו של ג׳וזיק",
+  /** Client-supplied captures of the app in its Chanukah season (24.11.26). */
+  screens: {
+    front: {
+      src: "/campaign/kislev/app-home.webp",
+      alt: "מסך הבית באפליקציית ג׳וזיק עם שירי חנוכה מומלצים",
+    },
+    back: {
+      src: "/campaign/kislev/app-playlist.webp",
+      alt: "רשימת שירי חנוכה באפליקציית ג׳וזיק",
+    },
+  },
   extra: {
     eyebrow: "האקסטרה",
     heading: "מה מקבלים בג׳וזיק",

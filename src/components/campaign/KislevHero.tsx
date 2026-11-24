@@ -1,6 +1,7 @@
 import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
 import { FoldText } from "@/components/ui/FoldText";
+import { Phone } from "@/components/sections/Hero";
 import { hero, kislev, links } from "@/content/site";
 
 /**
@@ -8,10 +9,8 @@ import { hero, kislev, links } from "@/content/site";
  * said it: the question, the stop, the answer, the four bullets — but in the
  * design system's own voice: ink and cyan, no sticker colours.
  *
- * The dreidel is the banner's own 12-frame sprite. It spins on arrival,
- * winds down and comes to rest on frame 0, the one with the logo facing out,
- * so "stop spinning!" happens on the page instead of looping forever. It is
- * CSS only (no client JS), and under reduced motion it simply stands still.
+ * Beside it, two real screens from the app in its Chanukah season, framed
+ * exactly like the home-page hero.
  */
 export function KislevHero() {
   return (
@@ -22,10 +21,10 @@ export function KislevHero() {
           "linear-gradient(200deg, var(--color-ink-800) 0%, var(--color-ink-900) 60%)",
       }}
     >
-      {/* The one lighting effect: a cyan bloom behind the dreidel. */}
+      {/* The one lighting effect: a cyan bloom behind the phones. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-10 h-[760px] w-[760px] rounded-full blur-[40px] mid:top-1/2 mid:-translate-y-1/2"
+        className="pointer-events-none absolute -bottom-60 h-[760px] w-[760px] rounded-full blur-[40px] mid:top-1/2 mid:bottom-auto mid:-translate-y-1/2"
         style={{
           insetInlineEnd: "-8%",
           background:
@@ -112,23 +111,30 @@ export function KislevHero() {
           </div>
         </div>
 
-        {/* First on phones, so the dreidel is part of the first screen. */}
-        <div className="relative order-first mx-auto w-[min(42vw,170px)] mid:order-none mid:w-[min(100%,420px)]">
-          {/* Sound-wave rings: the stage the dreidel stops on. */}
-          <div aria-hidden="true" className="kislev-waves">
-            <i />
-            <i />
-            <i />
-          </div>
-          <div aria-hidden="true" className="kislev-floor">
-            <i />
-            <i />
-            <i />
-          </div>
-          <div
-            role="img"
-            aria-label={kislev.dreidelAlt}
-            className="kislev-dreidel relative aspect-[235/290] w-full"
+        {/*
+         * The app itself, dressed for Chanukah: the client's own screens, in
+         * the home page's phone frame. min-height is load-bearing for the
+         * same reason as on the home page: the back phone is absolute.
+         */}
+        <div className="relative flex min-h-[500px] justify-center mid:rotate-[-4deg]">
+          <Phone
+            src={kislev.screens.back.src}
+            alt={kislev.screens.back.alt}
+            imgWidth={1080}
+            imgHeight={2104}
+            width={240}
+            sizes="(max-width: 860px) 45vw, 218px"
+            className="phone-back absolute start-0 top-[70px] opacity-85"
+          />
+          <Phone
+            src={kislev.screens.front.src}
+            alt={kislev.screens.front.alt}
+            imgWidth={1080}
+            imgHeight={2104}
+            width={270}
+            priority
+            sizes="(max-width: 860px) 50vw, 248px"
+            className="relative z-2"
           />
         </div>
       </Container>
