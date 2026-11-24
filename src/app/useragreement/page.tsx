@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import Link from "next/link";
 import { LegalLayout } from "@/components/shared/LegalLayout";
 import { site } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "תקנון ותנאי שימוש",
   description:
     "תקנון ותנאי השימוש בשירות Jusic — היקף השירות, שימוש מותר, תכני משתמשים, קניין רוחני, אחריות, פרטיות, שיפוי ודין וסמכות שיפוט.",
   alternates: { canonical: "/useragreement" },
-};
+});
 
 /**
  * The client's approved legal text, transcribed as delivered.

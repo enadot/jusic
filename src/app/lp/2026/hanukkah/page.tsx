@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
@@ -14,12 +15,12 @@ import { kislev } from "@/content/site";
  * kept out of the index and the sitemap so it never competes with the home
  * page for organic search.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: kislev.meta.title,
   description: kislev.meta.description,
   alternates: { canonical: kislev.path },
   robots: { index: false, follow: true },
-};
+});
 
 export default function KislevPage() {
   return (

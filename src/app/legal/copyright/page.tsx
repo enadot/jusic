@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import Link from "next/link";
 import { LegalLayout } from "@/components/shared/LegalLayout";
 import { ContactModalTrigger } from "@/components/forms/ContactModalTrigger";
 import { site } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "זכויות יוצרים",
   description:
     "מדיניות זכויות היוצרים של Jusic — כיצד להגיש הודעה על הפרת זכויות, מה עליה לכלול וכיצד היא מטופלת.",
   alternates: { canonical: "/legal/copyright" },
-};
+});
 
 /**
  * Israeli law has no DMCA-style statutory notice-and-takedown, so this page

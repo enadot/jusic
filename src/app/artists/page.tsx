@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
@@ -11,11 +12,11 @@ import {
 import { ArtistForm } from "@/components/artists/ArtistForm";
 import { artists } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: artists.meta.title,
   description: artists.meta.description,
   alternates: { canonical: "/artists" },
-};
+});
 
 export default function ArtistsPage() {
   return (
