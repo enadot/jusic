@@ -41,7 +41,9 @@ export type Placement =
   /** The stories band on the home page. */
   | "stories"
   /** The copyright form, reached from /legal/copyright rather than the footer. */
-  | "legal";
+  | "legal"
+  /** A campaign landing page (e.g. /lp/2026/hanukkah). */
+  | "campaign";
 
 export type EventParams = {
   placement: Placement;

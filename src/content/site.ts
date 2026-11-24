@@ -619,3 +619,77 @@ export const download = {
   },
   stickyCta: "הורידו את Jusic",
 } as const;
+
+/**
+ * The Kislev "dreidel" display campaign (HaMechadesh network, banner set V11).
+ *
+ * The hero lines are the banners' own copy, word for word — the landing page
+ * has to say what the ad said, or the click feels like a bait and switch. The
+ * card bodies are not new either: each is approved site copy (or a clause of
+ * it) moved under the banner bullet it proves. Nothing here counts anything.
+ */
+export const kislev = {
+  path: "/lp/2026/hanukkah",
+  utmCampaign: "jusic_kislev_dreidel",
+  meta: {
+    title: "כל המוזיקה היהודית במקום אחד. גם בחנוכה. | ג׳וזיק",
+    description:
+      "מחפשים מוזיקה תוססת, צעירה, עדכנית? האזנה ללא הגבלה, הכי מעודכן, קליפי וידאו וסטורי אמנים — בג׳וזיק.",
+  },
+  question: "מחפשים מוזיקה",
+  tags: ["תוססת,", "צעירה,", "עדכנית?"],
+  /**
+   * The H1: the site's approved line, with Chanukah as its third row (client
+   * request, 24.11.26 — replaces the banner's "תפסיקו להסתובב!"). The last
+   * row is the cyan one.
+   */
+  headline: ["כל המוזיקה היהודית", "במקום אחד.", "גם בחנוכה."],
+  headingA: "ג׳וזיק. האקסטרה",
+  headingB: "של המוזיקה!",
+  bullets: ["האזנה ללא הגבלה", "הכי מעודכן", "קליפי וידאו", "סטורי אמנים"],
+  /** Client-supplied captures of the app in its Chanukah season (24.11.26). */
+  screens: {
+    front: {
+      src: "/campaign/kislev/app-home.webp",
+      alt: "מסך הבית באפליקציית ג׳וזיק עם שירי חנוכה מומלצים",
+    },
+    back: {
+      src: "/campaign/kislev/app-playlist.webp",
+      alt: "רשימת שירי חנוכה באפליקציית ג׳וזיק",
+    },
+  },
+  extra: {
+    eyebrow: "האקסטרה",
+    heading: "מה מקבלים בג׳וזיק",
+    cards: [
+      {
+        title: "האזנה ללא הגבלה",
+        body: "מנוי חינמי נהנה מהאזנה רציפה עם פרסומות שמע איכותיות בלבד — ללא פרסומות קופצות וללא מסיחים שפוגעים בחוויה.",
+        shot: "/app/home.jpg",
+        alt: "מסך הבית באפליקציית ג׳וזיק",
+      },
+      {
+        title: "הכי מעודכן",
+        body: "עולם של תוכן עדכני ומסונן בקפידה, ופלייליסטים לכל מצב רוח ולכל תקופה בשנה.",
+        shot: "/app/playlists.webp",
+        alt: "מסך הפלייליסטים באפליקציית ג׳וזיק",
+      },
+      {
+        title: "קליפי וידאו",
+        body: "קליפים מצולמים של אמנים, בתוך אותה סביבה מסוננת.",
+        shot: "/app/clips.webp",
+        alt: "מסך הקליפים החדשים באפליקציית ג׳וזיק",
+      },
+      {
+        title: "סטורי אמנים",
+        body: "סטוריז נבחרים של אמנים מהארץ ומהעולם, מסוננים ומותאמים — רק מה שחשוב ומעניין.",
+        shot: null,
+        alt: "",
+      },
+    ],
+  },
+  download: {
+    heading: "להורדה או השמעה",
+    body: "בחרו את מה שמתאים לכם — כל האפשרויות פתוחות.",
+  },
+} as const;

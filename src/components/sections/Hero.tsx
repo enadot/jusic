@@ -10,9 +10,12 @@ import { hero, links, screens, tickerWords } from "@/content/site";
  * fills it, so the 11px bezel is the only thing between the two — which is why
  * the `sizes` below are the frame width minus 22, not the frame width.
  */
-function Phone({
+export function Phone({
   src,
   width,
+  alt = screens.alt,
+  imgWidth = 1440,
+  imgHeight = 2936,
   priority = false,
   className,
   sizes,
@@ -20,6 +23,10 @@ function Phone({
 }: {
   src: string;
   width: number;
+  alt?: string;
+  /** Intrinsic size of the screenshot; defaults to the home-page captures. */
+  imgWidth?: number;
+  imgHeight?: number;
   priority?: boolean;
   className?: string;
   sizes: string;
@@ -33,9 +40,9 @@ function Phone({
     >
       <Image
         src={src}
-        alt={screens.alt}
-        width={1440}
-        height={2936}
+        alt={alt}
+        width={imgWidth}
+        height={imgHeight}
         priority={priority}
         quality={70}
         sizes={sizes}
