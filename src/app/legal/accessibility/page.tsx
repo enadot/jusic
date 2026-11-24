@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { LegalLayout } from "@/components/shared/LegalLayout";
 import { legalEntity, site } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "הצהרת נגישות",
   description:
     "הצהרת הנגישות של אתר Jusic — רמת הנגישות, ההתאמות שבוצעו ודרכי פנייה בנושא נגישות.",
   alternates: { canonical: "/legal/accessibility" },
-};
+});
 
 export default function AccessibilityPage() {
   return (

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { SiteHeader } from "@/components/sections/SiteHeader";
@@ -9,12 +10,12 @@ import { JsonLd } from "@/components/shared/JsonLd";
 import { softwareAppSchemas } from "@/lib/schema";
 import { contact, download } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "הורדת האפליקציה",
   description:
     "Jusic זמינה בדפדפן, ב־Google Play, ב־App Store וכקובץ APK להתקנה ישירה במכשירים כשרים ללא חנות אפליקציות.",
   alternates: { canonical: "/download" },
-};
+});
 
 export default function DownloadPage() {
   return (

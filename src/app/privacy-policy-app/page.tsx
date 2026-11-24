@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import Link from "next/link";
 import { LegalLayout } from "@/components/shared/LegalLayout";
 import { legalEntity, site } from "@/content/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocial({
   title: "מדיניות פרטיות",
   description:
     "איזה מידע נאסף באתר Jusic, לשם מה הוא משמש, למי הוא נמסר, כמה זמן הוא נשמר וכיצד לממש את זכויותיכם לפי חוק הגנת הפרטיות.",
   alternates: { canonical: "/privacy-policy-app" },
-};
+});
 
 /**
  * Describes what the site actually does, not a generic template: the fields in
