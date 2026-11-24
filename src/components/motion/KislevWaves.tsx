@@ -4,7 +4,7 @@ import { useEffect, useState, type ComponentType } from "react";
 import type { SlicedWavesProps } from "./SlicedWaves";
 
 /**
- * The /kislev hero's light ribbons, loaded the way the home page loads its
+ * The /lp/2026/hanukkah hero's light ribbons, loaded the way the home page loads its
  * Scanner field: the module arrives on idle in its own chunk, after the first
  * paint; under `prefers-reduced-motion` it is never fetched at all, and a
  * mid-session change to the setting removes it. Until it lands, or if WebGL2

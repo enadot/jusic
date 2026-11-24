@@ -45,7 +45,7 @@ scrolls away or the tab is hidden, and nothing is fetched at all under
 one — the cyan headline line sits on that field and has to clear 3:1. Re-tune it
 and re-measure, or leave it alone.
 
-The `/kislev` campaign page has a second WebGL field on the same terms:
+The `/lp/2026/hanukkah` campaign page has a second WebGL field on the same terms:
 `src/components/motion/SlicedWaves.tsx` (React Bits, ported to TS, no
 dependencies) is imported on idle by `KislevWaves.tsx`, never under reduced
 motion. Its opacity and its desktop mask (faded out across the text half) are

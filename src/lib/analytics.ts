@@ -42,7 +42,7 @@ export type Placement =
   | "stories"
   /** The copyright form, reached from /legal/copyright rather than the footer. */
   | "legal"
-  /** A campaign landing page (e.g. /kislev). */
+  /** A campaign landing page (e.g. /lp/2026/hanukkah). */
   | "campaign";
 
 export type EventParams = {

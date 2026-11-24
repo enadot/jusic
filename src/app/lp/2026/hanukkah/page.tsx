@@ -9,7 +9,8 @@ import { KislevExtra } from "@/components/campaign/KislevExtra";
 import { kislev } from "@/content/site";
 
 /**
- * Landing page for the Kislev dreidel display campaign. Paid traffic only:
+ * Landing page for the Kislev dreidel display campaign.
+ * Served at /lp/2026/hanukkah. Paid traffic only:
  * kept out of the index and the sitemap so it never competes with the home
  * page for organic search.
  */

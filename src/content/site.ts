@@ -629,7 +629,7 @@ export const download = {
  * it) moved under the banner bullet it proves. Nothing here counts anything.
  */
 export const kislev = {
-  path: "/kislev",
+  path: "/lp/2026/hanukkah",
   utmCampaign: "jusic_kislev_dreidel",
   meta: {
     title: "כל המוזיקה היהודית במקום אחד. גם בחנוכה. | ג׳וזיק",
