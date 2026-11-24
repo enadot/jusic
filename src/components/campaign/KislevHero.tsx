@@ -32,9 +32,14 @@ export function KislevHero() {
         }}
       />
 
-      <Container className="relative grid items-center gap-6 pt-28 pb-16 mid:grid-cols-[1.1fr_0.9fr] mid:gap-10 mid:pt-36 mid:pb-24">
-        <div>
-          <p className="m-0 text-[clamp(19px,1.8vw,26px)] leading-[1.35] font-bold text-text-secondary">
+      <Container className="relative grid items-center pt-28 pb-16 mid:grid-cols-[1.1fr_0.9fr] mid:gap-10 mid:pt-36 mid:pb-24">
+        {/*
+         * On phones this column dissolves (display: contents) so the phones
+         * can slot in between the sub-headline and the bullets via `order`.
+         * From `mid` up it is an ordinary block and the orders do nothing.
+         */}
+        <div className="contents mid:block">
+          <p className="order-1 m-0 text-[clamp(19px,1.8vw,26px)] leading-[1.35] font-bold text-text-secondary">
             {kislev.question}{" "}
             {kislev.tags.map((tag, i) => (
               <span key={tag}>
@@ -51,7 +56,7 @@ export function KislevHero() {
 
           <FoldText
             as="h1"
-            className="mega hero-fold kislev-h1 mt-4"
+            className="mega hero-fold kislev-h1 order-2 mt-4"
             lines={[
               { text: kislev.headline[0] },
               { text: kislev.headline[1] },
@@ -63,11 +68,11 @@ export function KislevHero() {
             creaseShading={0.55}
           />
 
-          <p className="mt-5 mb-0 text-[clamp(24px,2.6vw,38px)] leading-[1.15] font-extrabold tracking-[-0.01em]">
+          <p className="order-3 mt-5 mb-0 text-[clamp(24px,2.6vw,38px)] leading-[1.15] font-extrabold tracking-[-0.01em]">
             {kislev.headingA} {kislev.headingB}
           </p>
 
-          <ul className="mt-7 flex list-none flex-wrap gap-2 p-0">
+          <ul className="order-5 mt-7 flex list-none flex-wrap gap-2 p-0">
             {kislev.bullets.map((b) => (
               <li
                 key={b}
@@ -79,7 +84,7 @@ export function KislevHero() {
             ))}
           </ul>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="order-6 mt-9 flex flex-wrap gap-3">
             <CtaLink
               href={links.web}
               event="listen_web_click"
@@ -117,7 +122,7 @@ export function KislevHero() {
          * the home page's phone frame. min-height is load-bearing for the
          * same reason as on the home page: the back phone is absolute.
          */}
-        <div className="relative flex min-h-[500px] justify-center mid:rotate-[-4deg]">
+        <div className="relative order-4 mt-10 flex min-h-[500px] justify-center mid:order-none mid:mt-0 mid:rotate-[-4deg]">
           <Phone
             src={kislev.screens.back.src}
             alt={kislev.screens.back.alt}
