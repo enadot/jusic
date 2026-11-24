@@ -958,6 +958,31 @@ details[open]::details-content {
   from { background-size: 0% 3px; }
 }
 
+/* The SlicedWaves field: faded out under the header and at the seam with the
+   next section, and eased in when its chunk lands. */
+.kislev-waves {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  animation: scanner-in 900ms var(--ease-out) both;
+}
+/* Side by side, the text column must stay clear of the ribbons: measured, the
+   cyan headline line drops to 1.7:1 over a bright bar. So from `mid` up the
+   field also fades out across the text's half (the right half, under
+   dir="rtl" — a physical edge because the layout's geometry is) and keeps its
+   full strength behind the phones. */
+@media (min-width: 861px) {
+  .kislev-waves {
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%),
+      linear-gradient(to left, transparent 0%, transparent 55%, #000 74%); /* rtl-allow: physical, see above */
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%),
+      linear-gradient(to left, transparent 0%, transparent 55%, #000 74%); /* rtl-allow: physical, see above */
+    mask-composite: intersect;
+  }
+}
+
 /* A notch under .mega, so "כל המוזיקה היהודית" holds one line beside the phones. */
 .kislev-h1 { font-size: clamp(40px, 5.2vw, 84px); }
 
@@ -966,4 +991,5 @@ details[open]::details-content {
 
 @media (prefers-reduced-motion: reduce) {
   .kislev-word { animation: none; }
+  .kislev-waves { display: none; }
 }

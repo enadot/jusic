@@ -2,6 +2,7 @@ import { Container } from "@/components/shared/Container";
 import { CtaLink } from "@/components/ui/CtaLink";
 import { FoldText } from "@/components/ui/FoldText";
 import { Phone } from "@/components/sections/Hero";
+import { KislevWaves } from "@/components/motion/KislevWaves";
 import { hero, kislev, links } from "@/content/site";
 
 /**
@@ -21,6 +22,12 @@ export function KislevHero() {
           "linear-gradient(200deg, var(--color-ink-800) 0%, var(--color-ink-900) 60%)",
       }}
     >
+      {/*
+       * Ribbons of light (React Bits' SlicedWaves), loaded on idle and never
+       * under reduced motion. Decoration only: the hero is complete without it.
+       */}
+      <KislevWaves className="kislev-waves pointer-events-none absolute inset-0" />
+
       {/* The one lighting effect: a cyan bloom behind the phones. */}
       <div
         aria-hidden="true"
@@ -76,7 +83,7 @@ export function KislevHero() {
             {kislev.bullets.map((b) => (
               <li
                 key={b}
-                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[15px] font-bold text-text-secondary"
+                className="flex items-center gap-2 rounded-full border border-white/10 bg-[var(--surface-card)] px-4 py-2 text-[15px] font-bold text-text-secondary"
               >
                 <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
                 {b}
@@ -84,12 +91,14 @@ export function KislevHero() {
             ))}
           </ul>
 
-          <div className="order-6 mt-9 flex flex-wrap gap-3">
+          {/* Full-width, one per row on phones; a row of pills from `mid` up. */}
+          <div className="order-6 mt-9 flex flex-col gap-3 mid:flex-row mid:flex-wrap">
             <CtaLink
               href={links.web}
               event="listen_web_click"
               placement="campaign"
               size="lg"
+              className="w-full mid:w-auto"
               icon="play_arrow"
             >
               {hero.ctas.web}
@@ -99,6 +108,7 @@ export function KislevHero() {
               event="google_play_click"
               placement="campaign"
               size="lg"
+              className="w-full mid:w-auto"
               variant="outline"
               icon="google_play"
             >
@@ -109,6 +119,7 @@ export function KislevHero() {
               event="app_store_click"
               placement="campaign"
               size="lg"
+              className="w-full mid:w-auto"
               variant="outline"
               icon="app_store"
             >
